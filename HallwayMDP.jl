@@ -1,9 +1,13 @@
 
-function getHallwayMDP(N::Number, γ)
+function getHallwayMDP(N::Number, γ, startInMiddle::Bool = true)
     S = [i for i in 1:N]
     A = [1,2] #left, right
     μ = zeros(N)
-    μ .= 1/length(S)
+    if startInMiddle
+        μ[N ÷ 2] = 1.0
+    else
+        μ .= 1/length(S)
+    end
     #μ[Int64(floor(N/2))] = 1
     P = Array{Float64,3}(undef, length(S), length(S), length(A))
     R = Array{Float64,2}(undef, length(S), length(A))
@@ -32,6 +36,11 @@ function getHallwayMDP(N::Number, γ)
             P[s¹, s⁰, a] = p_right
         end
     end 
+    # Make endpoints terminal
+    P[:, 1, :] .= 0.0
+    P[:, N, :] .= 0.0
+    P[1, 1, :] .= 1.0
+    P[N, N, :] .= 1.0
     return MDP(S, A, P, R, μ, γ)
     #return S, A, P, R
 end

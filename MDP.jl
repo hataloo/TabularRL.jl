@@ -41,7 +41,8 @@ end
 function step(mdp::MDP, s::Int64, a::Int64)
     r = mdp.R[s,a]
     s_new = sampleNextState(mdp, s, a)
-    return s_new, r
+    done = mdp.terminal[s_new]
+    return s_new, r, done
     #s_new = StatsBase.sample(S, P[:,s,a], 1)
     #return s_new
 end
@@ -54,17 +55,21 @@ end
 
 function sampleEpisode(mdp::MDP, π::Array{Float64,2},T)
     # π[s,a]
-    e = Episode([Vector{Int64}(undef, T) for _ in 1:3]...)
-    e.s[1] = sampleInitialState(mdp)
+    #e = Episode([Vector{Int64}(undef, T) for _ in 1:3]...)
+    #e.s[1] = sampleInitialState(mdp)
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
-    for t = 1:(T)
-        s = e.s[t]
-        e.a[t] = a = rand(π_d[s])
-        s, r = step(mdp, s, a)
-        e.r[t] = r
+    states, actions, rewards = Vector{Int64}(undef), Vector{Int64}(undef), Vector{Float64}(undef)
+    states.append(sampleInitialState(mdp))
+    for t = 1:T
+        s = states[t]
+        actions.append(rand(π_d[s]))
+        a = actions[t]
+        s, r, done = step(mdp, s, a)
+        actions.append(r); rewards.append(r)
+        if done: break
         if t < T
-            e.s[t+1] = s
+            states.append(s)
         end
     end
-    return e
+    return Episode(states, actions, rewards)
 end
