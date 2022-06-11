@@ -11,9 +11,9 @@ struct MDP
     MDP(S::Vector{Int64}, A::Vector{Int64}, P::Array{Float64,3}, R::Array{Float64,2}, μ::Vector{Float64}, γ::Float64) = begin
         N = length(S)
         terminal = Vector{Bool}(undef, N)
-        @assert any(sum(P, dims = 1) .== 1.0), "Transition probs must equal 1 for all sum(P[:,s,a])"
-        @assert sum(μ) .== 1.0, "Initial state dist., μ, must equal 1"
-        for s in 1:N terminal[s] == all(P[s,s,:] .== 1.0) end
+        @assert any(abs.(sum(P, dims = 1) .- 1.0) .< 1e-12) "Transition probs must equal 1 for all sum(P[:,s,a])"
+        @assert sum(μ) .== 1.0 "Initial state dist., μ, must equal 1"
+        for s in 1:N terminal[s] = all(abs.(P[s,s,:] .- 1.0) .< 1e-12) end
         new(S, A, P, R, μ, γ, terminal)
     end
 end
@@ -53,22 +53,27 @@ struct Episode
     r::Vector{Int64}
 end
 
-function sampleEpisode(mdp::MDP, π::Array{Float64,2},T)
+function length(episode::Episode)
+    return length(episode.s)
+end
+
+function sampleEpisode(mdp::MDP, π::Array{Float64,2},T::Number)
     # π[s,a]
     #e = Episode([Vector{Int64}(undef, T) for _ in 1:3]...)
     #e.s[1] = sampleInitialState(mdp)
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
-    states, actions, rewards = Vector{Int64}(undef), Vector{Int64}(undef), Vector{Float64}(undef)
-    states.append(sampleInitialState(mdp))
+    states, actions, rewards = Vector{Int64}(undef,0), Vector{Int64}(undef,0), Vector{Float64}(undef,0)
+    append!(states, sampleInitialState(mdp))
     for t = 1:T
+        println(t)
         s = states[t]
-        actions.append(rand(π_d[s]))
-        a = actions[t]
+        a = rand(π_d[s])
+        append!(actions, a)
         s, r, done = step(mdp, s, a)
-        actions.append(r); rewards.append(r)
-        if done: break
+        append!(rewards, r)
+        if done break end
         if t < T
-            states.append(s)
+            append!(states, s)
         end
     end
     return Episode(states, actions, rewards)

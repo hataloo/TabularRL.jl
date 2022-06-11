@@ -19,6 +19,12 @@ struct Policy <: AbstractPolicy
     end
 end
 
+function createUniformPolicy(mdp :: MDP)
+    S_size, A_size = length(mdp.S), length(mdp.A)
+    π_vals = ones(S_size, A_size) ./ A_size
+    return Policy(mdp.S, mdp.A, π_vals)
+end
+
 function sample(π::Policy, s::Int64)
     return rand(π.π[s])
 end 

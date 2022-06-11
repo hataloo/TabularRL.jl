@@ -21,6 +21,7 @@
         AbstractPolicy,
         GLIEPolicy,
         Policy,
+        createUniformPolicy,
         sample,
         EpsilonGreedyPolicy,
         sample,
