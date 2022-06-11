@@ -7,10 +7,11 @@ function QLearning(π::GLIEPolicy, mdp::MDP, N_episodes::Number, T::Number)
         s = sampleInitialState(mdp)
         for t in 1:T
             a = sample(π, s, Q)
-            s_new, r = step(mdp, s, a)
+            s_new, r, done = step(mdp, s, a)
             Q[s,a] += α[i] * (r + mdp.γ * maximum(Q[s_new,a]) - Q[s,a])
             i += 1
             s = s_new
+            if done break end
         end
     end
     return Q
@@ -26,7 +27,7 @@ function DoubleQLearning(π::GLIEPolicy, mdp::MDP, N_episodes::Number, T::Number
         s = sampleInitialState(mdp)
         for t in 1:T
             a = sample(π, s, (Q_1 .+ Q_2) ./ 2)
-            s_new, r = step(mdp, s, a)
+            s_new, r, done = step(mdp, s, a)
             p = rand()
             if p < 0.5
                 Q_1[s,a] += α[i] * (r + mdp.γ * Q_2[s_new,argmax(Q_1[s_new,:])] - Q_1[s,a])
@@ -35,6 +36,7 @@ function DoubleQLearning(π::GLIEPolicy, mdp::MDP, N_episodes::Number, T::Number
             end
             i += 1
             s = s_new
+            if done break end
         end
     end
     return Q_1, Q_2

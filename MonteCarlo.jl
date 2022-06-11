@@ -11,7 +11,7 @@ function MonteCarlo(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Numbe
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
         for (t,s) in enumerate(e.s)
-            G = sum([γ_power[τ-t+1] * e.r[τ] for τ in (t):T])
+            G = sum([γ_power[τ-t+1] * e.r[τ] for τ in (t):length(e)])
             n[s] += 1
             V[s] += 1/n[s]*(G - V[s])
         end

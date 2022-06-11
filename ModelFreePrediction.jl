@@ -2,7 +2,7 @@ using LinearAlgebra, DataStructures
 include("TabularRL.jl")
 
 
-hallwayMDP = getHallwayMDP(20, 0.9)
+hallwayMDP = getHallwayMDP(10, 0.999, true)
 #S, A, P, R = hallwayMDP.S, hallwayMDP.A, hallwayMDP.P, hallwayMDP.R
 
 t_v = @elapsed begin
@@ -18,12 +18,14 @@ println("Maximum difference: ", maximum(V_p - V))
 step(hallwayMDP, 3, 1)
 
 ep = sampleEpisode(hallwayMDP, p_p, 10)
-
-t_mc = @elapsed V_mc, n_mc = MonteCarlo(p_p, hallwayMDP, 300, 3000)
-t_td0 = @elapsed V_td0 = TD0(p_p, hallwayMDP, 300, 3000)
-t_tdn = @elapsed V_tdn = TDnStep(p_p, hallwayMDP, 100, 300, 3000)
-t_lambda = @elapsed V_lambda = TDλ(p_p, hallwayMDP, 0.2, 300, 3000)
-t_sarsa = @elapsed Q_sarsa = SARSA(p_p, hallwayMDP, 600, 8000)
+N_episodes = 30000
+T_max = 500
+α = LinRange(1, 1e-6, N_episodes)
+t_mc = @elapsed V_mc, n_mc = MonteCarlo(p_p, hallwayMDP, N_episodes, T_max)
+t_td0 = @elapsed V_td0 = TD0(p_p, hallwayMDP, N_episodes, T_max, α)
+t_tdn = @elapsed V_tdn = TDnStep(p_p, hallwayMDP, 5, N_episodes, T_max, α)
+t_lambda = @elapsed V_lambda = TDλ(p_p, hallwayMDP, 0.6, N_episodes, T_max, α)
+t_sarsa = @elapsed Q_sarsa = SARSA(p_p, hallwayMDP, N_episodes, T_max, α)
 V_sarsa = maximum(Q_sarsa, dims = 2)
 
 maximum(abs.(V_lambda - V_p))

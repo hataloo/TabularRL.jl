@@ -4,9 +4,9 @@ include("TabularRL.jl")
 hallwayMDP = getHallwayMDP(10, 0.9)
 
 
-Q = ActionValueIteration(hallwayMDP, 500)
+Q = ActionValueIteration(hallwayMDP, 1000)
 
-π_ϵ = EpsilonGreedyPolicy(hallwayMDP, 1.0, 0.01, Int64(2e6))
+π_ϵ = EpsilonGreedyPolicy(hallwayMDP, 1.0, 0.05, Int64(2e6))
 π_ϵ.ϵ_current_iteration
 sample(π_ϵ, 10, Q)
 

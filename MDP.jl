@@ -1,10 +1,11 @@
 using StatsBase, Distributions
+import Base.length
 
 struct MDP
     S::Vector{Int64} # Set of states
     A::Vector{Int64} # Set of actions
     P::Array{Float64,3} # P[s_1, s_0, a] : probability of transitioning to s_1 from s_0 when choosing a
-    R::Array{Float64,2} # R[s, a] : expected reward
+    R::Array{Float64,2} # R[s_0, a] : expected reward
     μ::Vector{Float64} # μ[s] : initial state distribution
     γ::Float64 # Discount factor
     terminal::Vector{Bool} # terminal[s] is true if the state s is terminal. State is terminal if P[s,s,a] = 1 ∀a∈A.
@@ -12,7 +13,7 @@ struct MDP
         N = length(S)
         terminal = Vector{Bool}(undef, N)
         @assert any(abs.(sum(P, dims = 1) .- 1.0) .< 1e-12) "Transition probs must equal 1 for all sum(P[:,s,a])"
-        @assert sum(μ) .== 1.0 "Initial state dist., μ, must equal 1"
+        @assert abs(sum(μ) - 1.0) < 1e-12 "Initial state dist., μ, must equal 1"
         for s in 1:N terminal[s] = all(abs.(P[s,s,:] .- 1.0) .< 1e-12) end
         new(S, A, P, R, μ, γ, terminal)
     end
@@ -39,8 +40,8 @@ function sampleStateFromDist(mdp::MDP, s::Int64, a::Int64)
 end
 
 function step(mdp::MDP, s::Int64, a::Int64)
-    r = mdp.R[s,a]
     s_new = sampleNextState(mdp, s, a)
+    r = mdp.R[s,a]
     done = mdp.terminal[s_new]
     return s_new, r, done
     #s_new = StatsBase.sample(S, P[:,s,a], 1)
@@ -65,7 +66,6 @@ function sampleEpisode(mdp::MDP, π::Array{Float64,2},T::Number)
     states, actions, rewards = Vector{Int64}(undef,0), Vector{Int64}(undef,0), Vector{Float64}(undef,0)
     append!(states, sampleInitialState(mdp))
     for t = 1:T
-        println(t)
         s = states[t]
         a = rand(π_d[s])
         append!(actions, a)
