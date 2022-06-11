@@ -5,8 +5,17 @@ struct MDP
     A::Vector{Int64} # Set of actions
     P::Array{Float64,3} # P[s_1, s_0, a] : probability of transitioning to s_1 from s_0 when choosing a
     R::Array{Float64,2} # R[s, a] : expected reward
-    μ::Vector{Float64} # u[s] : initial state distribution
+    μ::Vector{Float64} # μ[s] : initial state distribution
     γ::Float64 # Discount factor
+    terminal::Vector{Bool} # terminal[s] is true if the state s is terminal. State is terminal if P[s,s,a] = 1 ∀a∈A.
+    MDP(S::Vector{Int64}, A::Vector{Int64}, P::Array{Float64,3}, R::Array{Float64,2}, μ::Vector{Float64}, γ::Float64) = begin
+        N = length(S)
+        terminal = Vector{Bool}(undef, N)
+        @assert any(sum(P, dims = 1) .== 1.0), "Transition probs must equal 1 for all sum(P[:,s,a])"
+        @assert sum(μ) .== 1.0, "Initial state dist., μ, must equal 1"
+        for s in 1:N terminal[s] == all(P[s,s,:] .== 1.0) end
+        new(S, A, P, R, μ, γ, terminal)
+    end
 end
 
 function sampleInitialState(mdp::MDP)
