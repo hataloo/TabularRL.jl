@@ -1,4 +1,5 @@
 include("TabularRL.jl")
+using DataStructures
 
 
 hallwayMDP = getHallwayMDP(10, 0.9)
@@ -8,7 +9,7 @@ Q_vi = ActionValueIteration(hallwayMDP, 1000)
 
 π_ϵ = EpsilonGreedyPolicy(hallwayMDP, 1.0, 0.01, Int64(2e6))
 π_ϵ.ϵ_current_iteration
-sample(π_ϵ, 10, Q)
+sample(π_ϵ, 10, Q_vi)
 
 N_episodes = 200000
 T_max = 100
@@ -19,7 +20,9 @@ Q_double1, Q_double2 = DoubleQLearning(π_ϵ, hallwayMDP, N_episodes, T_max)
 Q_results = OrderedDict{String, Any}([
     ("sarsa", Q_sarsa), 
     ("Q-learning", Q_qlearning), 
-    ("DoubleQ", Q_double1)])
+    ("DoubleQ1", Q_double1), 
+    ("DoubleQ2", Q_double2), 
+    ("DoubleQmean", (Q_double1 + Q_double2)./2)])
 Q_resultsSummary = OrderedDict{String, Any}()
 for (k,Q_res) in Q_results
     Qdeviation = abs.(Q_res - Q_vi)

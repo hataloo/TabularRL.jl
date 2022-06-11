@@ -15,7 +15,7 @@ function ValueIteration(T, P, R, γ)
 end
 
 function ValueIteration(mdp::MDP, T)
-    return ValueIteration(T, mdp.P, mdp.R, mdp.γ)
+    return ValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
 
 function PolicyIteration(T, P, R, γ)
@@ -35,10 +35,6 @@ function PolicyIteration(T, P, R, γ)
         Pᵖ = [sum([P[s_1, s_0, a] .* π_0[s_0, a] for a in A]) for s_0 in S, s_1 in S]
         Rᵖ = [sum([R[s,a] .* π_0[s,a] for a in A]) for s in S]
         Vᵖ = inv(I - γ .* Pᵖ) * Rᵖ
-        #Vᵖ = ValueIteration(100, P, R, γ)
-        #println(size(Pᵖ))
-        #println(size(Rᵖ))
-        #println(size(Vᵖ))
         
         # Step 2: Policy improvement
         for s in S
@@ -46,14 +42,13 @@ function PolicyIteration(T, P, R, γ)
             π_0[s,:] .= 0
             π_0[s,a] = 1
         end
-        #println(sum(abs.(π_0-π_1) .> 1e-3))
         π_1 = copy(π_0)
     end
     return π_0, Vᵖ, Pᵖ
 end 
 
 function PolicyIteration(mdp::MDP, T)
-    return PolicyIteration(T, mdp.P, mdp.R, mdp.γ)
+    return PolicyIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
 
 function ActionValueIteration(T, P, R, γ)
@@ -71,5 +66,5 @@ function ActionValueIteration(T, P, R, γ)
 end
 
 function ActionValueIteration(mdp::MDP, T)
-    return ActionValueIteration(T, mdp.P, mdp.R, mdp.γ)
+    return ActionValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
