@@ -44,7 +44,6 @@ function sampleInitialState(mdp::MDP)
 end
 
 function sampleStateFromDist(mdp::MDP, s::Int64, a::Int64)
-    #d = DiscreteNonParametric(mdp.S, mdp.P[:,s,a])
     return rand(mdp.P_dist[s,a])
 end
 
