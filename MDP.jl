@@ -57,25 +57,39 @@ struct TabularMDP{R<:Distribution} <: AbstractTabularMDP{R}
 end
 
 function sampleInitialState(mdp::TabularMDP)
-    d = DiscreteNonParametric(mdp.S, mdp.μ)
-    return rand(d)
+    #d = DiscreteNonParametric(mdp.S, mdp.μ)
+    return rand(mdp.μ)
 end
 
-function sampleStateFromDist(mdp::TabularMDP, s::Int64, a::Int64)
+function sampleState(mdp::TabularMDP, s::Int64, a::Int64)
     return rand(mdp.P_dist[s,a])
 end
-
+function sampleReward(mdp::TabularMDP, s::Int64, a::Int64)
+    return rand(mdp.R[s,a])
+end
+function sampleReward(mdp::TabularMDP, s_1::Int64, s_0::Int64, a::Int64)
+    return rand(mdp.R[s_1,s_0,a])
+end
 function step(mdp::TabularMDP, s::Int64, a::Int64)
-    s_new = sampleStateFromDist(mdp, s, a)
-    r = rand(mdp.R[s,a])
+    s_new = sampleState(mdp, s, a)
+    if ndims(mdp.R) == 2
+        r = sampleReward(mdp, s, a)
+    else
+        r = sampleReward(mdp, s_new, s, a)    
+    end
     done = mdp.terminal[s_new]
     return s_new, r, done
 end
 
 struct Episode
-    s::Vector{Int64}
-    a::Vector{Int64}
-    r::Vector{Int64}
+    states::Vector{Int64}
+    actions::Vector{Int64}
+    rewards::Vector{Int64}
+    Episode(states::Vector{Int64}, actions::Vector{Int64}, rewards::Vector{Int64}) = begin
+        S, A, R = length.([states, actions, rewards])
+        @assert S == A & S == R "Length of states, actions and rewards must be equal, given lengths $S, $A, $R."
+        new(states, actions, rewards)
+    end
 end
 
 function length(episode::Episode)

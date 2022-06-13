@@ -13,7 +13,7 @@
         TabularMDP, 
         sampleInitialState,
         sampleNextState,
-        sampleStateFromDist,
+        sampleState,
         step,
         Episode,
         sampleEpisode,
