@@ -10,8 +10,8 @@ function MonteCarlo(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T
     γ_power = [mdp.γ^(t) for t in 0:T] # Need to +1 to account for γ^0
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
-        for (t,s) in enumerate(e.s)
-            G = sum([γ_power[τ-t+1] * e.r[τ] for τ in (t):length(e)])
+        for (t,s) in enumerate(e.states)
+            G = sum([γ_power[τ-t+1] * e.rewards[τ] for τ in (t):length(e)])
             n[s] += 1
             V[s] += 1/n[s]*(G - V[s])
         end

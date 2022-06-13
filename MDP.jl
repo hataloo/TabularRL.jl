@@ -40,8 +40,12 @@ struct TabularMDP{R <: Distribution} <: AbstractTabularMDP{R}
         for s in S, a in A
             P_dist[s,a] = DiscreteNonParametric(S, P[:, s, a])
         end
-        println(typeof(Dirac.(R)))
         new{Dirac{Float64}}(S, A, P, P_dist, Dirac.(R), DiscreteNonParametric(S, μ), γ, terminal)
+    end
+    TabularMDP(P::Array{Float64,3}, 
+            R::Union{Array{Float64, 2}, Array{Float64,3}}, μ::Vector{Float64}, γ::Float64) = begin
+        numberOfStates, numberOfActions = length(μ), size(P,3)
+        TabularMDP(1:numberOfStates, 1:numberOfActions, P, R, μ, γ)
     end
 
     TabularMDP(S::Vector{Int64}, A::Vector{Int64}, P::Array{Float64,3}, 
@@ -56,6 +60,11 @@ struct TabularMDP{R <: Distribution} <: AbstractTabularMDP{R}
             P_dist[s,a] = DiscreteNonParametric(S, P[:, s, a])
         end
         new{T}(S, A, P, P_dist, R, DiscreteNonParametric(S,μ), γ, terminal)
+    end
+    TabularMDP(P::Array{Float64,3}, 
+            R::Union{Array{T,2},Array{T,3}}, μ::Vector{Float64}, γ::Float64) where T <: Distribution = begin
+        numberOfStates, numberOfActions = length(μ), size(P,3)
+        TabularMDP(1:numberOfStates, 1:numberOfActions, P, R, μ, γ)
     end
 end
 
