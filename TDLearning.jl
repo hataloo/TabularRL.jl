@@ -29,15 +29,15 @@ function TDnStep(π::Array{Float64,2}, mdp::TabularMDP, n::Int64, N_episodes::Nu
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
         L = length(e)
-        for (t,s) in enumerate(e.s)
+        for (t,s) in enumerate(e.states)
             G = 0
             if t + n <= L
                 for i in 0:(n-1)
-                    G += e.r[t+i] * γ_power[i + 1]
+                    G += e.rewards[t+i] * γ_power[i + 1]
                 end
-                G += γ_power[n+1] * V[e.s[t+n]]
+                G += γ_power[n+1] * V[e.states[t+n]]
             else 
-                G += sum(e.r[t:end] .* γ_power[1:(L-t+1)])
+                G += sum(e.rewards[t:end] .* γ_power[1:(L-t+1)])
             end
             V[s] += α[i]*(G - V[s])
         end

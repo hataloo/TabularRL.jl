@@ -122,7 +122,7 @@ struct Episode
 end
 
 function length(episode::Episode)
-    return length(episode.s)
+    return length(episode.states)
 end
 
 function sampleEpisode(mdp::TabularMDP, π::Array{Float64,2},T::Number)
