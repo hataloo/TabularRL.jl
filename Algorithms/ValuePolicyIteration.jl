@@ -42,13 +42,16 @@ function PolicyIteration(T, P, R, γ)
             π_0[s,:] .= 0
             π_0[s,a] = 1
         end
+        if t > 1 & π_1 == π_0
+            break
+        end
         π_1 = copy(π_0)
     end
     return π_0, Vᵖ, Pᵖ
 end 
 
 function PolicyIteration(mdp::TabularMDP, T)
-    return PolicyIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
+    return PolicyIteration(T, mdp.P, meanReward(mdp), mdp.γ)
 end
 
 function ActionValueIteration(T, P, R, γ)
@@ -66,5 +69,5 @@ function ActionValueIteration(T, P, R, γ)
 end
 
 function ActionValueIteration(mdp::TabularMDP, T)
-    return ActionValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
+    return ActionValueIteration(T, mdp.P, meanReward(mdp), mdp.γ)
 end
