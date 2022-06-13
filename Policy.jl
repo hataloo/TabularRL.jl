@@ -19,7 +19,7 @@ struct Policy <: AbstractPolicy
     end
 end
 
-function createUniformPolicy(mdp :: MDP)
+function createUniformPolicy(mdp :: TabularMDP)
     S_size, A_size = length(mdp.S), length(mdp.A)
     π_vals = ones(S_size, A_size) ./ A_size
     return Policy(mdp.S, mdp.A, π_vals)
@@ -39,7 +39,7 @@ mutable struct EpsilonGreedyPolicy <: GLIEPolicy
     ϵ_final::Float64
     ϵ_current_iteration::Int64
     ϵ_total_iterations::Int64
-    EpsilonGreedyPolicy(mdp::MDP, ϵ_init, ϵ_final, ϵ_total_iterations) = begin
+    EpsilonGreedyPolicy(mdp::TabularMDP, ϵ_init, ϵ_final, ϵ_total_iterations) = begin
         uniformAction = DiscreteNonParametric(mdp.A, [1/length(mdp.A) for _ in mdp.A])
         new(mdp.S, mdp.A, uniformAction, ϵ_init, ϵ_final, 0, ϵ_total_iterations)
     end
@@ -68,7 +68,7 @@ mutable struct BoltzmannPolicy <: GLIEPolicy
     β_final::Float64
     β_current_iterations::Int64
     β_total_iterations::Int64
-    BoltzmannPolicy(mdp::MDP, β_init, β_final, β_total_iterations) = begin
+    BoltzmannPolicy(mdp::TabularMDP, β_init, β_final, β_total_iterations) = begin
         new(mdp.S, mdp.A, uniformAction, β_init, β_final, 0, β_total_iterations)
     end
 end

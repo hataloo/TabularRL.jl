@@ -43,6 +43,6 @@ function getHallwayMDP(N::Number, γ, startInMiddle::Bool = true)
     P[:, N, :] .= 0.0
     P[1, 1, :] .= 1.0
     P[N, N, :] .= 1.0
-    return MDP(S, A, P, R, μ, γ)
+    return TabularMDP(S, A, P, R, μ, γ)
     #return S, A, P, R
 end

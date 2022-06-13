@@ -10,7 +10,7 @@
     include("QLearning.jl")
     export 
         #MDP.jl
-        MDP, 
+        TabularMDP, 
         sampleInitialState,
         sampleNextState,
         sampleStateFromDist,

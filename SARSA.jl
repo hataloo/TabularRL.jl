@@ -1,4 +1,4 @@
-function SARSA(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Number, α = nothing)
+function SARSA(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Number, α = nothing)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
@@ -20,7 +20,7 @@ function SARSA(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Number, α
     return Q
 end
 
-function SARSA(π::GLIEPolicy, mdp::MDP, N_episodes::Number, T::Number, α = nothing)
+function SARSA(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::Number, α = nothing)
     reset!(π)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 

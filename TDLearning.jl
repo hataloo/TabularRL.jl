@@ -1,4 +1,4 @@
-function TD0(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Number, α = nothing)
+function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Number, α = nothing)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
@@ -19,7 +19,7 @@ function TD0(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Number, α =
     return V
 end
 
-function TDnStep(π::Array{Float64,2}, mdp::MDP, n::Int64, N_episodes::Number, T::Number, α = nothing)
+function TDnStep(π::Array{Float64,2}, mdp::TabularMDP, n::Int64, N_episodes::Number, T::Number, α = nothing)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
@@ -46,7 +46,7 @@ function TDnStep(π::Array{Float64,2}, mdp::MDP, n::Int64, N_episodes::Number, T
     return V
 end
 
-function TDλ(π::Array{Float64,2}, mdp::MDP, λ::Float64, N_episodes::Number, T::Number, α = nothing)
+function TDλ(π::Array{Float64,2}, mdp::TabularMDP, λ::Float64, N_episodes::Number, T::Number, α = nothing)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end

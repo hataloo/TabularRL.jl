@@ -1,5 +1,5 @@
 
-function MonteCarlo(π::Array{Float64,2}, mdp::MDP, N_episodes::Number, T::Number)
+function MonteCarlo(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Number)
     #π[s,a]
     max_dev = maximum(abs.([sum(π[s,:]) for s in mdp.S] .- 1))
     if max_dev > 1e-10

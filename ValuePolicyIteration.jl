@@ -14,7 +14,7 @@ function ValueIteration(T, P, R, γ)
     return V_1
 end
 
-function ValueIteration(mdp::MDP, T)
+function ValueIteration(mdp::TabularMDP, T)
     return ValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
 
@@ -47,7 +47,7 @@ function PolicyIteration(T, P, R, γ)
     return π_0, Vᵖ, Pᵖ
 end 
 
-function PolicyIteration(mdp::MDP, T)
+function PolicyIteration(mdp::TabularMDP, T)
     return PolicyIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
 
@@ -65,6 +65,6 @@ function ActionValueIteration(T, P, R, γ)
     return Q_1
 end
 
-function ActionValueIteration(mdp::MDP, T)
+function ActionValueIteration(mdp::TabularMDP, T)
     return ActionValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
 end
