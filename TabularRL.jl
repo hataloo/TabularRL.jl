@@ -2,12 +2,13 @@
 
 include("MDP.jl")
 include("Policy.jl")
-include("Envs/HallwayMDP.jl")
 include("Algorithms/ValuePolicyIteration.jl")
 include("Algorithms/MonteCarlo.jl")
 include("Algorithms/TDLearning.jl")
 include("Algorithms/SARSA.jl")
 include("Algorithms/QLearning.jl")
+include("Envs/HallwayMDP.jl")
+include("Envs/CliffWalking.jl")
 export 
     #MDP.jl
     TabularMDP, 
@@ -26,23 +27,27 @@ export
     EpsilonGreedyPolicy,
     sample,
     BoltzmannPolicy,
-    #HallwayMDP.jl
-    getHallwayMDP,
-    #ValuePolicyIteration
-    ValueIteration,
-    PolicyIteration,
-    ActionValueIteration,
-    #MonteCarlo
-    MonteCarlo,
-    #TDLearning
-    TD0,
-    TDnStep,
-    TDλ,
-    #SARSA
-    SARSA,
-    #QLearning,
-    QLearning,
-    DoubleQLearning
-    
+    #Algorithms:
+        #ValuePolicyIteration
+        ValueIteration,
+        PolicyIteration,
+        ActionValueIteration,
+        #MonteCarlo
+        MonteCarlo,
+        #TDLearning
+        TD0,
+        TDnStep,
+        TDλ,
+        #SARSA
+        SARSA,
+        #QLearning,
+        QLearning,
+        DoubleQLearning,
+    #Envs:
+        #HallwayMDP.jl
+        getHallwayMDP,
+        #CliffWalking.jl
+        getCliffWalkingMDP,
+        buildGridWalkTransitionProbabilities
 
 #end

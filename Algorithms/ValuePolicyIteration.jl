@@ -42,7 +42,7 @@ function PolicyIteration(T, P, R, γ)
             π_0[s,:] .= 0
             π_0[s,a] = 1
         end
-        if t > 1 & π_1 == π_0
+        if t > 1 && π_1 == π_0
             break
         end
         π_1 = copy(π_0)

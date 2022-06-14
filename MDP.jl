@@ -45,7 +45,7 @@ struct TabularMDP{R <: Distribution} <: AbstractTabularMDP{R}
     TabularMDP(P::Array{Float64,3}, 
             R::Union{Array{Float64, 2}, Array{Float64,3}}, μ::Vector{Float64}, γ::Float64) = begin
         numberOfStates, numberOfActions = length(μ), size(P,3)
-        TabularMDP(1:numberOfStates, 1:numberOfActions, P, R, μ, γ)
+        TabularMDP(Vector{Int64}(1:numberOfStates), Vector{Int64}(1:numberOfActions), P, R, μ, γ)
     end
 
     TabularMDP(S::Vector{Int64}, A::Vector{Int64}, P::Array{Float64,3}, 
@@ -125,7 +125,7 @@ function length(episode::Episode)
     return length(episode.states)
 end
 
-function sampleEpisode(mdp::TabularMDP, π::Array{Float64,2},T::Number)
+function sampleEpisode(mdp::TabularMDP, π::Array{Float64,2}, T::Number)
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
     states, actions, rewards = Vector{Int64}(undef,0), Vector{Int64}(undef,0), Vector{Float64}(undef,0)
     append!(states, sampleInitialState(mdp))
@@ -141,4 +141,8 @@ function sampleEpisode(mdp::TabularMDP, π::Array{Float64,2},T::Number)
         end
     end
     return Episode(states, actions, rewards)
+end
+
+function sampleEpisode(mdp::TabularMDP, π::Policy, T::Number)
+    return sampleEpisode(mdp, π.π_vals, T)
 end
