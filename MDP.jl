@@ -82,7 +82,7 @@ function meanReward(mdp::TabularMDP)
     else
         # Dims: [S', S, A] * [S', S, A]
         # E[r | s, a] = \sum_{s' \in S} E[R_t | s', s, a] * P(s' | s, a)
-        expectedRewards = sum(mean.(mdp.R) * mdp.P, dims = 1)
+        expectedRewards = sum(mean.(mdp.R) .* mdp.P, dims = 1)
         return dropdims(expectedRewards, dims = 1)
     end
 end
@@ -141,8 +141,4 @@ function sampleEpisode(mdp::TabularMDP, π::Array{Float64,2}, T::Number)
         end
     end
     return Episode(states, actions, rewards)
-end
-
-function sampleEpisode(mdp::TabularMDP, π::Policy, T::Number)
-    return sampleEpisode(mdp, π.π_vals, T)
 end

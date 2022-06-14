@@ -34,8 +34,6 @@ function buildGridWalkTransitionProbabilities(height::Integer, width::Integer, r
             end
         end
     end
-    P[:, :, 1, width, :] .= 0.0
-    P[1, width, 1, width, :] .= 1.0
     @assert all(abs.(sum(P, dims = [1,2]) .- 1) .< 1e-14) "All transition probs does not sum to 1"
     return P, S, A
 end
@@ -48,6 +46,7 @@ function getCliffWalkingMDP(height::Integer, width::Integer, γ::Float64,
     # If transition to cliff, ie move from (height-1:height, 2:width-1) to (height, 1),
     # get reward of -100.
     R[height, 1, height-1:height, 2:width-1, :] .= -100
+    R[height, width, height, width, :] .= 0
     #Adjust transitions around cliff
     #P[h_1, w_1, h_0, w_0, a]
     P[:, :, height-1, 2:(width-1), :] .= 0.0
@@ -68,6 +67,9 @@ function getCliffWalkingMDP(height::Integer, width::Integer, γ::Float64,
             end
         end
     end
+    # Add goal
+    P[:, :, height, width, :] .= 0.0
+    P[height, width, height, width, :] .= 1.0
     μ = zeros(height, width); μ[height, 1] = 1.0
     P = reshape(P, height * width, height * width, 4)
     R = reshape(R, height * width, height * width, 4)

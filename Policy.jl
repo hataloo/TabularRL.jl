@@ -84,3 +84,7 @@ function sample(π::BoltzmannPolicy, s::Int64, Q::Array{Float64,2})
     d = DiscreteNonParametric(π.A, softmax(β * Q[s,:]))
     return rand(d)
 end
+
+function sampleEpisode(mdp::TabularMDP, π::Policy, T::Number)
+    return sampleEpisode(mdp, π.π_vals, T)
+end
