@@ -2,6 +2,7 @@
 
 include("MDP.jl")
 include("Policy.jl")
+include("Utils.jl")
 include("Algorithms/ValuePolicyIteration.jl")
 include("Algorithms/MonteCarlo.jl")
 include("Algorithms/TDLearning.jl")
@@ -22,7 +23,7 @@ export
     AbstractPolicy,
     GLIEPolicy,
     Policy,
-    createUniformPolicy,
+    getUniformPolicy,
     sample,
     EpsilonGreedyPolicy,
     sample,

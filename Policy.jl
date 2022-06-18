@@ -19,7 +19,7 @@ struct Policy <: AbstractPolicy
     end
 end
 
-function createUniformPolicy(mdp :: TabularMDP)
+function getUniformPolicy(mdp :: TabularMDP)
     S_size, A_size = length(mdp.S), length(mdp.A)
     π_vals = ones(S_size, A_size) ./ A_size
     return Policy(mdp.S, mdp.A, π_vals)

@@ -9,7 +9,7 @@ println("Minimum P: $(minimum(sum(P, dims = [1])))")
 println("Max deviation from 1: $(maximum(abs.(sum(P, dims = [1]) .-1)))")
 println("$(argmax(P))")
 
-ep = sampleEpisode(cliffWalkingMDP, createUniformPolicy(cliffWalkingMDP), 5000)
+ep = sampleEpisode(cliffWalkingMDP, getUniformPolicy(cliffWalkingMDP), 5000)
 
 
 π_ϵ = EpsilonGreedyPolicy(cliffWalkingMDP, 1.0, 0.05, Int64(2e6))
