@@ -29,6 +29,10 @@ function sample(π::Policy, s::Int64)
     return rand(π.π[s])
 end 
 
+function getActionProbabilities(π::Policy, s::Int64)::Vector{Float64}
+    return π.π_vals[s,:]
+end
+
 mutable struct EpsilonGreedyPolicy <: GLIEPolicy
     #Linearly annealing EpsilonGreedyPolicy
     S::Vector{Int64}
@@ -49,9 +53,14 @@ function reset!(π::EpsilonGreedyPolicy)
     π.ϵ_current_iteration = 0
 end
 
+function getEpsilon(π::EpsilonGreedyPolicy)
+    ϵ = π.ϵ_init - (π.ϵ_init - π.ϵ_final)* minimum([1, π.ϵ_current_iteration/π.ϵ_total_iterations])
+    return ϵ
+end
+
 function sample(π::EpsilonGreedyPolicy, s::Int64, Q::Array{Float64,2})
     p = rand()
-    ϵ = π.ϵ_init - (π.ϵ_init - π.ϵ_final)* minimum([1, π.ϵ_current_iteration/π.ϵ_total_iterations])
+    ϵ = getEpsilon(π)
     π.ϵ_current_iteration += 1
     if p < ϵ
         return rand(π.UniformAction)
@@ -60,16 +69,24 @@ function sample(π::EpsilonGreedyPolicy, s::Int64, Q::Array{Float64,2})
     end
 end
 
+function getActionProbabilities(π::EpsilonGreedyPolicy, s::Int64, Q::Array{Float64, 2})::Vector{Float64}
+    numActions = size(Q, 2)
+    ϵ = getEpsilon(π)
+    p = fill(ϵ / numActions, numActions)
+    p[argmax(Q[s,:])] += (1 - ϵ)
+    return p
+end
+
 mutable struct BoltzmannPolicy <: GLIEPolicy
     S::Vector{Int64}
     A::Vector{Int64}
     #Q::Array{Float64,2}
     β_init::Float64
     β_final::Float64
-    β_current_iterations::Int64
+    β_current_iteration::Int64
     β_total_iterations::Int64
     BoltzmannPolicy(mdp::TabularMDP, β_init, β_final, β_total_iterations) = begin
-        new(mdp.S, mdp.A, uniformAction, β_init, β_final, 0, β_total_iterations)
+        new(mdp.S, mdp.A, β_init, β_final, 0, β_total_iterations)
     end
 end
 
@@ -77,12 +94,25 @@ function reset!(π::BoltzmannPolicy)
     π.β_current_iteration = 0
 end
 
+function getBeta(π::BoltzmannPolicy)
+    β = π.β_init - (π.β_init - π.β_final) * minimum([1, π.β_current_iteration/π.β_total_iterations])
+    return β
+end
+
 function sample(π::BoltzmannPolicy, s::Int64, Q::Array{Float64,2})
-    p = rand()
-    β = π.β - (π.β_init - π.β_final) * minimum([1, π.β_current_iteration/π.β_total_iterations])
+    β = getBeta(π)
     π.β_current_iteration += 1
     d = DiscreteNonParametric(π.A, softmax(β * Q[s,:]))
     return rand(d)
+end
+
+function getActionProbabilities(π::BoltzmannPolicy, s::Int64, Q::Array{Float64, 2})::Vector{Float64}
+    β = getBeta(π)
+    return softmax(β * Q[s,:])
+end
+
+function getActionProbabilities(π::Union{EpsilonGreedyPolicy, BoltzmannPolicy}, s::Int64, a::Int64, Q::Array{Float64, 2})
+    return getActionProbabilities(π, s, Q)[a]
 end
 
 function sampleEpisode(mdp::TabularMDP, π::Policy, T::Number)

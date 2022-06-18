@@ -41,3 +41,26 @@ function SARSA(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::Number, �
     end
     return Q
 end
+
+
+function ExpectedSARSA(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::Number, α = nothing)
+    reset!(π)
+    if α === nothing 
+        α = LinRange(1,1e-6, N_episodes) 
+    end
+    Q = zeros(length(mdp.S), length(mdp.A))
+    i = 1
+    for n in 1:N_episodes
+        s = sampleInitialState(mdp)
+        a = sample(π, s, Q)
+        for t in 1:T
+            s_new, r, done = step(mdp, s, a)
+            a_new = sample(π, s_new, Q)
+            Q[s,a] += α[i] * (r + mdp.γ * sum(getActionProbabilities(π, s_new, Q) .* Q[s_new, :]) - Q[s,a])
+            s, a = s_new, a_new 
+            if done break end
+        end
+        i += 1
+    end
+    return Q
+end
