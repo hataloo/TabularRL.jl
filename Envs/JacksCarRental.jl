@@ -1,13 +1,15 @@
 using Distributions, DataStructures
 
-function getJacksCarRentalMDP(γ = 0.9; λ_requests::Vector{Int64} = [3, 4], λ_returns::Vector{Int64} = [3, 2], carsMax::Int = 20, moveMax::Int = 5, verbose::Bool = false)
-    @assert length(λ_requests) == length(λ_returns) "Length of requests and returns must be equal, given $(length(λ_requests)) and $(length(λ_returns))"
-    @assert length(λ_requests) == 2 "Number of locations (requests and returns) must equal 2"
+function getJacksCarRentalMDP(γ = 0.9; λ_requests::Tuple{Int64, Int64} = (3, 4), λ_returns::Tuple{Int64,Int64} = (3, 2), carsMax::Int = 20, moveMax::Int = 5, verbose::Bool = false)
+    @assert all(λ_requests .>= 0.0) && all(λ_returns .>= 0.0) "Expected requests and returns must be positive, given λ_requests = $λ_requests, λ_returns = $λ_returns"
+    
     numRentalLocations = length(λ_requests)
     S = Vector{Int64}(1:((carsMax+1) ^ numRentalLocations))
     A = Vector{Int64}(-moveMax:moveMax)
-
-    poissonpdf(x::Int64, λ::Real) = λ^x * exp(-λ)/factorial(x) 
+    #P[s', r' | s, a]
+    stateRewardTransitionProbs = fill(0.0, repeat([carsMax+1], 2 * numRentalLocations)..., 2 *moveMax + 1, carsMax+1, carsMax+1)
+    
+    poissonpdf(x::Int64, λ::Real) =  λ^x * exp(-λ)/factorial(x) 
     censoredpoissonpdf(x::Int64, λ::Real, max::Int64) = begin
         @assert x <= max "Censoredpoissonpdf does not accept arguments above max = $max, given x = $x, λ = $λ"
         @assert x >= 0 "Censoredpoissonpdf does not accept negative arguments for x, given x = $x, max = $max, λ = $λ"
@@ -17,9 +19,7 @@ function getJacksCarRentalMDP(γ = 0.9; λ_requests::Vector{Int64} = [3, 4], λ_
             return poissonpdf(x, λ)
         end
     end
-    #P[s', r' | s, a]
-    stateRewardTransitionProbs = fill(0.0, repeat([carsMax+1], 2 * numRentalLocations)..., 2 *moveMax + 1, carsMax+1, carsMax+1)
-    
+
     t = @elapsed begin
     @Threads.threads for s_new1 = 0:carsMax
     @Threads.threads for s_new2 = 0:carsMax
