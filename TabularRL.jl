@@ -9,6 +9,7 @@ include("Algorithms/TDLearning.jl")
 include("Algorithms/SARSA.jl")
 include("Algorithms/QLearning.jl")
 include("Envs/HallwayMDP.jl")
+include("Envs/GridWorlds.jl")
 include("Envs/CliffWalking.jl")
 include("Envs/JacksCarRental.jl")
 export 
@@ -48,8 +49,14 @@ export
     #Envs:
         #HallwayMDP.jl
         getHallwayMDP,
+        #GridWorlds.jl
+        getMovementFunctions,
+        getWrappingMovementFunctions,
+        buildGridWalkTransitionProbabilities,
+        addTerminalState!,
+        addResettingState!,
         #CliffWalking.jl
         getCliffWalkingMDP,
-        buildGridWalkTransitionProbabilities
+        #JacksCarRental.jl
         getJacksCarRentalMDP
 #end

@@ -1,11 +1,12 @@
 include("TabularRL.jl")
-carsMax, moveMax = 12, 5
+carsMax, moveMax = 20, 5
 t = @elapsed begin
 mdp, stateMap = getJacksCarRentalMDP(carsMax = carsMax, moveMax = moveMax)
 end
-println("timeOuter = $t")
+println("Time to build MDP: $t")
 
 P_sum = sum(mdp.P, dims = [1])
+# Validate the transition probabilities
 println("Maximum transition probability: $(maximum(P_sum))")
 println("Minimum transitition probability: $(minimum(P_sum))") 
 
