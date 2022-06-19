@@ -10,6 +10,7 @@ include("Algorithms/SARSA.jl")
 include("Algorithms/QLearning.jl")
 include("Envs/HallwayMDP.jl")
 include("Envs/CliffWalking.jl")
+include("Envs/JacksCarRental.jl")
 export 
     #MDP.jl
     TabularMDP, 
@@ -50,5 +51,5 @@ export
         #CliffWalking.jl
         getCliffWalkingMDP,
         buildGridWalkTransitionProbabilities
-
+        getJacksCarRentalMDP
 #end

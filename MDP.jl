@@ -64,7 +64,8 @@ struct TabularMDP{R <: Distribution} <: AbstractTabularMDP{R}
     TabularMDP(P::Array{Float64,3}, 
             R::Union{Array{T,2},Array{T,3}}, μ::Vector{Float64}, γ::Float64) where T <: Distribution = begin
         numberOfStates, numberOfActions = length(μ), size(P,3)
-        TabularMDP(1:numberOfStates, 1:numberOfActions, P, R, μ, γ)
+        TabularMDP(Vector{Int64}(1:numberOfStates), Vector{Int64}(1:numberOfActions), 
+            P, R, μ, γ)
     end
 end
 
