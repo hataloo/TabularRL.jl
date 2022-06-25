@@ -1,6 +1,12 @@
 
 function getCliffWalkingMDP(height::Integer, width::Integer, γ::Float64, 
         randomDirectionProbability::Float64 = 0.3, wrapsAround::Bool = false)
+    if !(height > 1 && width > 1)  
+        throw(DomainError("Height and width must be > 1, given $height and $width.")) 
+    end
+    if !(randomDirectionProbability >= 0.0)
+        DomainError("randomDirectionProbability must be >= 0.0, given $randomDirectionProbability")
+    end
     left, right, up, down = 1:4
     P, S, A = buildSlipperyGridTransitionProbabilities(height, width, wrapsAround, randomDirectionProbability)
     R = fill(-1.0, height, width, height, width, length(A))

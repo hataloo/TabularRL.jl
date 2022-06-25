@@ -1,5 +1,5 @@
 
-function getHallwayMDP(N::Number, γ, startInMiddle::Bool = true)
+function getHallwayMDP(N::Number, γ, startInMiddle::Bool = true)::TabularMDP
     S = [i for i in 1:N]
     A = [1,2] #left, right
     μ = zeros(N)

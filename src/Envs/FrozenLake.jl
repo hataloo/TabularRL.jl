@@ -1,5 +1,7 @@
 function getFrozenLakeMDP(mapName::String = "4x4", slipProbability::Float64 = 0.3; γ::Float64, layout::Union{Vector{String},Nothing} = nothing)
-    @assert slipProbability < 1.0 && slipProbability >= 0.0 "slipProbability must be in the range [0, 1] but was given $slipProbability"
+    if (slipProbability > 1.0 || slipProbability < 0.0) 
+        DomainError("slipProbability must be in the range [0, 1] but was given $slipProbability")
+    end
     predefinedLayouts = Dict{String, Vector{String}}(
     "4x4" => [
         "SFFF",
@@ -20,7 +22,10 @@ function getFrozenLakeMDP(mapName::String = "4x4", slipProbability::Float64 = 0.
     )
     
     if layout === nothing
-        layout = predefinedLayouts[mapName]
+        try layout = predefinedLayouts[mapName] 
+        catch e
+            throw(KeyError("Layout name $layout not found in predefinedLayouts, available keys are: $(keys(predefinedLayouts)). $e"))
+        end
     end
     P, _, _, R, μ = buildFrozenLakeFromLayout(layout, slipProbability)
     mdp = buildGridWorldTabularMDP(P, R, μ, γ)
