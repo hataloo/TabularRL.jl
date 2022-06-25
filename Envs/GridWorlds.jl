@@ -60,16 +60,19 @@ function buildSlipperyGridTransitionProbabilities(height::Integer, width::Intege
 end
 
 function addTerminalState!(P::Array{Float64, 5}, height::Int64, width::Int64)
+    @assert all(abs.(sum(P, dims = [1,2]) .- 1) .< 1e-14) "All transition probs does not sum to 1, max-deviation: $(maximum(abs.(sum(P, dims = [1,2]) .- 1)))"
     P[:,:, height, width, :] .= 0.0
     P[height, width, height, width, :] .= 1.0
     @assert all(abs.(sum(P, dims = [1,2]) .- 1) .< 1e-14) "All transition probs does not sum to 1, max-deviation: $(maximum(abs.(sum(P, dims = [1,2]) .- 1)))"
 end
 
 function addTerminalState!(P::Array{Float64, 5}, height::Int64, width::Int64, R::Array{T,5}, terminationReward::T) where {T <: Union{Float64, Distribution}}
+    @assert all(abs.(sum(P, dims = [1,2]) .- 1) .< 1e-14) "All transition probs does not sum to 1, max-deviation: $(maximum(abs.(sum(P, dims = [1,2]) .- 1)))"
     terminalIndices = findall(P[height, width, :, :, :] .> 0.0)
     R[height:height, width:width, terminalIndices] .= terminationReward
     P[:,:, height, width, :] .= 0.0
     P[height, width, height, width, :] .= 1.0
+    R[height, width, height, width, :] .= 0.0
     @assert all(abs.(sum(P, dims = [1,2]) .- 1) .< 1e-14) "All transition probs does not sum to 1, max-deviation: $(maximum(abs.(sum(P, dims = [1,2]) .- 1)))"
 
 end
