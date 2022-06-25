@@ -1,9 +1,9 @@
-function ValueIteration(T, P, R, γ)
+function ValueIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float64,2}, γ::Float64)
     A = 1:size(P,3)
     S = 1:size(P,1)
     V_0 = zeros(size(P,1))
     V_1 = zeros(size(P,1))
-    for t in 1:T
+    for t in 1:iterations
         for s in S
             V_1[s] = maximum([R[s,a] + γ .* sum([P[s_1,s,a] .* V_0[s_1] for s_1 in S]) for a in A])
         end
@@ -12,11 +12,11 @@ function ValueIteration(T, P, R, γ)
     return V_1
 end
 
-function ValueIteration(mdp::TabularMDP, T)
-    return ValueIteration(T, mdp.P, mean.(mdp.R), mdp.γ)
+function ValueIteration(mdp::TabularMDP, iterations::Int64)
+    return ValueIteration(iterations, mdp.P, mean.(mdp.R), mdp.γ)
 end
 
-function PolicyIteration(T, P, R, γ)
+function PolicyIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float64,2}, γ::Float64)
     A = 1:size(P,3)
     S = 1:size(P,1)
     π_0 = Array{Float64,2}(undef, length(S), length(A))
@@ -28,7 +28,7 @@ function PolicyIteration(T, P, R, γ)
     Rᵖ = zeros(length(S))
     Pᵖ = zeros(length(S), length(S))
 
-    for t in 1:T
+    for t in 1:iterations
         # Step 1: Policy evaluation
         Pᵖ = [sum([P[s_1, s_0, a] .* π_0[s_0, a] for a in A]) for s_0 in S, s_1 in S]
         Rᵖ = [sum([R[s,a] .* π_0[s,a] for a in A]) for s in S]
@@ -48,16 +48,16 @@ function PolicyIteration(T, P, R, γ)
     return π_0, Vᵖ, Pᵖ
 end 
 
-function PolicyIteration(mdp::TabularMDP, T)
-    return PolicyIteration(T, mdp.P, meanReward(mdp), mdp.γ)
+function PolicyIteration(mdp::TabularMDP, iterations::Int64)
+    return PolicyIteration(iterations, mdp.P, meanReward(mdp), mdp.γ)
 end
 
-function ActionValueIteration(T, P, R, γ)
+function ActionValueIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float64,2}, γ::Float64)
     A = 1:size(P,3)
     S = 1:size(P,1)
     Q_0 = zeros(length(S), length(A))
     Q_1 = zeros(length(S), length(A))
-    for t in 1:T
+    for t in 1:iterations
         for s in S, a in A
             Q_1[s,a] = R[s,a] + γ * sum(P[:, s,a] .* maximum(Q_0, dims = 2))
         end
@@ -66,6 +66,6 @@ function ActionValueIteration(T, P, R, γ)
     return Q_1
 end
 
-function ActionValueIteration(mdp::TabularMDP, T)
-    return ActionValueIteration(T, mdp.P, meanReward(mdp), mdp.γ)
+function ActionValueIteration(mdp::TabularMDP, iterations::Int64)
+    return ActionValueIteration(iterations, mdp.P, meanReward(mdp), mdp.γ)
 end
