@@ -1,5 +1,3 @@
-import Distributions:convolve
-
 # Added from https://github.com/JuliaStats/Distributions.jl/pull/1523
 function convolve(d1::DiscreteNonParametric, d2::DiscreteNonParametric)
     support_conv = collect(Set(s1 + s2 for s1 in support(d1), s2 in support(d2)))

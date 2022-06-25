@@ -1,5 +1,3 @@
-using Distributions, DataStructures
-
 function getJacksCarRentalMDP(γ = 0.9; λ_requests::Tuple{Int64, Int64} = (3, 4), λ_returns::Tuple{Int64,Int64} = (3, 2), carsMax::Int = 20, moveMax::Int = 5, verbose::Bool = false)
     @assert all(λ_requests .>= 0.0) && all(λ_returns .>= 0.0) "Expected requests and returns must be positive, given λ_requests = $λ_requests, λ_returns = $λ_returns"
     

@@ -1,5 +1,10 @@
 module TabularRL
 
+using StatsBase, Distributions, DataStructures, LinearAlgebra
+using LogExpFunctions: softmax
+import Distributions:convolve
+import Base.length
+
 include("MDP.jl")
 include("Policy.jl")
 include("Utils.jl")
@@ -12,6 +17,8 @@ include("Envs/HallwayMDP.jl")
 include("Envs/GridWorlds.jl")
 include("Envs/CliffWalking.jl")
 include("Envs/JacksCarRental.jl")
+
+
 export 
     #MDP.jl
     TabularMDP, 
