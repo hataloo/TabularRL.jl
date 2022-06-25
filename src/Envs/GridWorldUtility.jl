@@ -1,3 +1,25 @@
+function buildGridWorldTabularMDP(
+    P::Array{Float64, 5}, 
+    R::Union{Array{T,4}, Array{T,5}},
+    μ::Array{Float64, 2},
+    γ::Float64) where T<:Union{Distribution, Float64}
+
+    height, width = size(P)[1:2]
+    nactions = size(P, 5)
+    @assert size(P)[3:4] == (height, width) "Dims 1,2 and 3,4 are not consistent for P, given size(P) = $(size(P))"
+    @assert size(R)[1:2] == (height, width) && size(R)[3:4] == (height, width) "Dims 1,2 and 3,4 for R are not consistent with P, given size(P) = $(size(P)) and size(R) = $(size(R))"
+    @assert size(μ) == (height, width) "Size of μ is inconsistent with P, given size(P) = $(size(P)) and size(μ) = $(size(μ))"
+    P_flat = reshape(P, height * width, height * width, nactions)
+    if ndims(R) == 4
+        R_flat = reshape(R, height * width, height * width)
+    else
+        R_flat = reshape(R, height * width, height * width, nactions)
+    end
+    μ_flat = reshape(μ, height * width)
+    mdp = TabularMDP(P_flat, R_flat, μ_flat, γ)
+    return mdp
+end
+
 function getMovementFunctions(height::Integer, width::Integer)
     getLeftIndex(i,j) = i, maximum([j-1,1])
     getRightIndex(i,j) = i, minimum([j+1,width])
@@ -51,12 +73,13 @@ end
 function buildSlipperyGridTransitionProbabilities(height::Integer, width::Integer, wrapsAround::Bool = false, randomDirectionProbability::Float64 = 0.3)
     movementProbs = slipperyMovementProbabilities(randomDirectionProbability)
     if wrapsAround
-        return buildGridWalkTransitionProbabilities(height, width,
+        P, S, A = buildGridWalkTransitionProbabilities(height, width,
             getWrappingMovementFunctions(height, width), movementProbs)
     else
-        return buildGridWalkTransitionProbabilities(height, width,
+        P, S, A = buildGridWalkTransitionProbabilities(height, width,
             getMovementFunctions(height, width), movementProbs)
     end
+    return P, S, A
 end
 
 function addTerminalState!(P::Array{Float64, 5}, height::Int64, width::Int64)
@@ -138,4 +161,31 @@ function addResettingState!(P::Array{Float64,5}, resettingStates::Vector{Tuple{I
     for (res, start, ret) in zip(resettingStates, startStates, resetRewards) 
         addResettingState!(P, res, start, R, ret) 
     end
+end
+
+function findCharacterCoordinateInLayout(layout::Vector{String}, character::Char; mustExist::Bool = true)
+    coordinates = (-1,-1)
+    for i in 1:length(layout)
+        for j in 1:length(layout[i])
+            if layout[i][j] == character
+                coordinates = (i,j)
+            end
+        end
+    end
+    if mustExist
+        @assert coordinates != (-1, -1) "No character '$character' found in layout, given layout = $(display(layout))"
+    end
+    return coordinates
+end
+
+function findAllCharacterCoordinatesInLayout(layout::Vector{String}, character::Char)
+    coordinates = Tuple{Int64, Int64}[]
+    for i in 1:length(layout)
+        for j in 1:length(layout[i])
+            if layout[i][j] == character
+                push!(coordinates, (i,j))
+            end
+        end
+    end
+    return coordinates
 end

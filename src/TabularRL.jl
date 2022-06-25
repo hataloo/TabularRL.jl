@@ -14,9 +14,10 @@ include("Algorithms/TDLearning.jl")
 include("Algorithms/SARSA.jl")
 include("Algorithms/QLearning.jl")
 include("Envs/HallwayMDP.jl")
-include("Envs/GridWorlds.jl")
+include("Envs/GridWorldUtility.jl")
 include("Envs/CliffWalking.jl")
 include("Envs/JacksCarRental.jl")
+include("Envs/FrozenLake.jl")
 
 
 export 
@@ -59,6 +60,7 @@ export
         #HallwayMDP.jl
         getHallwayMDP,
         #GridWorlds.jl
+        buildGridWorldTabularMDP,
         getMovementFunctions,
         getWrappingMovementFunctions,
         slipperyMovementProbabilities,
@@ -66,8 +68,13 @@ export
         buildSlipperyGridTransitionProbabilities,
         addTerminalState!,
         addResettingState!,
+        findCharacterCoordinateInLayout,
+        findAllCharacterCoordinatesInLayout,
         #CliffWalking.jl
         getCliffWalkingMDP,
         #JacksCarRental.jl
-        getJacksCarRentalMDP
+        getJacksCarRentalMDP,
+        #FrozenLake.jl
+        getFrozenLakeMDP,
+        buildFrozenLakeFromLayout
 end
