@@ -1,5 +1,3 @@
-using StatsBase, Distributions
-import Base.length
 abstract type Space end
 struct DiscreteSpace <: Space end
 struct ContinuousSpace <: Space end

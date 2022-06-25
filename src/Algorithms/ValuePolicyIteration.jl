@@ -1,5 +1,3 @@
-using LinearAlgebra
-
 function ValueIteration(T, P, R, γ)
     A = 1:size(P,3)
     S = 1:size(P,1)

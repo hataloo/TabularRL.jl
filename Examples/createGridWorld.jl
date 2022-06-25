@@ -1,4 +1,4 @@
-include("TabularRL.jl")
+using TabularRL
 
 height, width = 10, 15
 

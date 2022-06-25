@@ -1,7 +1,3 @@
-using Distributions
-#using NNlib: softmax
-using LogExpFunctions: softmax
-
 abstract type AbstractPolicy end
 abstract type GLIEPolicy <: AbstractPolicy end
 

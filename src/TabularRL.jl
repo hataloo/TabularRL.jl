@@ -1,4 +1,9 @@
-#module TabularRL
+module TabularRL
+
+using StatsBase, Distributions, DataStructures, LinearAlgebra, OrderedCollections
+using LogExpFunctions: softmax
+import Distributions:convolve
+import Base.length, Base.step
 
 include("MDP.jl")
 include("Policy.jl")
@@ -12,6 +17,8 @@ include("Envs/HallwayMDP.jl")
 include("Envs/GridWorlds.jl")
 include("Envs/CliffWalking.jl")
 include("Envs/JacksCarRental.jl")
+
+
 export 
     #MDP.jl
     TabularMDP, 
@@ -30,6 +37,7 @@ export
     EpsilonGreedyPolicy,
     sample,
     BoltzmannPolicy,
+    getUniformPolicy,
     #Algorithms:
         #ValuePolicyIteration
         ValueIteration,
@@ -43,6 +51,7 @@ export
         TDλ,
         #SARSA
         SARSA,
+        ExpectedSARSA,
         #QLearning,
         QLearning,
         DoubleQLearning,
@@ -52,11 +61,13 @@ export
         #GridWorlds.jl
         getMovementFunctions,
         getWrappingMovementFunctions,
+        slipperyMovementProbabilities,
         buildGridWalkTransitionProbabilities,
+        buildSlipperyGridTransitionProbabilities,
         addTerminalState!,
         addResettingState!,
         #CliffWalking.jl
         getCliffWalkingMDP,
         #JacksCarRental.jl
         getJacksCarRentalMDP
-#end
+end

@@ -1,6 +1,4 @@
-using LinearAlgebra, DataStructures
-include("TabularRL.jl")
-
+using TabularRL, OrderedCollections, StatsBase
 
 hallwayMDP = getHallwayMDP(10, 0.999, true)
 #S, A, P, R = hallwayMDP.S, hallwayMDP.A, hallwayMDP.P, hallwayMDP.R

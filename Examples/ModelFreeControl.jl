@@ -1,5 +1,6 @@
-include("TabularRL.jl")
-using DataStructures
+using TabularRL
+using TabularRL: sample
+using DataStructures, StatsBase
 
 
 hallwayMDP = getHallwayMDP(10, 0.9)
