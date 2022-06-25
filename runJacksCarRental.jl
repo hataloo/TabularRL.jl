@@ -1,4 +1,5 @@
-include("TabularRL.jl")
+using TabularRL
+
 carsMax, moveMax = 20, 5
 t = @elapsed begin
 mdp, stateMap = getJacksCarRentalMDP(carsMax = carsMax, moveMax = moveMax)

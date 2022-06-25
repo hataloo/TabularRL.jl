@@ -1,9 +1,9 @@
 module TabularRL
 
-using StatsBase, Distributions, DataStructures, LinearAlgebra
+using StatsBase, Distributions, DataStructures, LinearAlgebra, OrderedCollections
 using LogExpFunctions: softmax
 import Distributions:convolve
-import Base.length
+import Base.length, Base.step
 
 include("MDP.jl")
 include("Policy.jl")
@@ -37,6 +37,7 @@ export
     EpsilonGreedyPolicy,
     sample,
     BoltzmannPolicy,
+    getUniformPolicy,
     #Algorithms:
         #ValuePolicyIteration
         ValueIteration,
@@ -50,6 +51,7 @@ export
         TDλ,
         #SARSA
         SARSA,
+        ExpectedSARSA,
         #QLearning,
         QLearning,
         DoubleQLearning,
@@ -59,7 +61,9 @@ export
         #GridWorlds.jl
         getMovementFunctions,
         getWrappingMovementFunctions,
+        slipperyMovementProbabilities,
         buildGridWalkTransitionProbabilities,
+        buildSlipperyGridTransitionProbabilities,
         addTerminalState!,
         addResettingState!,
         #CliffWalking.jl
