@@ -1,5 +1,6 @@
 
-function getHallwayMDP(N::Number, γ, startInMiddle::Bool = true)::TabularMDP
+function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true)::TabularMDP
+    if N < 2 throw(DomainError("N must be greater than 1, given N = $N.")) end
     S = [i for i in 1:N]
     A = [1,2] #left, right
     μ = zeros(N)

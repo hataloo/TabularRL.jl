@@ -1,5 +1,7 @@
 function getJacksCarRentalMDP(γ = 0.9; λ_requests::Tuple{Int64, Int64} = (3, 4), λ_returns::Tuple{Int64,Int64} = (3, 2), carsMax::Int = 20, moveMax::Int = 5, verbose::Bool = false)
     @assert all(λ_requests .>= 0.0) && all(λ_returns .>= 0.0) "Expected requests and returns must be positive, given λ_requests = $λ_requests, λ_returns = $λ_returns"
+    if carsMax < 2 throw(DomainError("carsMax must be greater than 1, given carsMax = $carsMax")) end
+    if moveMax < 1 throw(DomainError("moveMax must be greater than 0, given moveMax = $moveMax")) end
     
     numRentalLocations = length(λ_requests)
     S = Vector{Int64}(1:((carsMax+1) ^ numRentalLocations))
