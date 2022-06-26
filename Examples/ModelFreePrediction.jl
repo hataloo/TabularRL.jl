@@ -13,7 +13,7 @@ println("Time value iteration: ", t_v)
 println("Time policy iteration: ", t_p)
 println("Maximum difference: ", maximum(V_p - V))
 
-step(hallwayMDP, 3, 1)
+#step(hallwayMDP, 3, 1)
 
 ep = sampleEpisode(hallwayMDP, p_p, 10)
 N_episodes = 30000

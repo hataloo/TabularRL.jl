@@ -6,10 +6,10 @@ function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Numbe
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
     V = zeros(length(mdp.S))
     for n in 1:N_episodes
-        s = sampleInitialState(mdp)
+        s, done = reset(mdp)
         for t in 1:T
             a = rand(π_d[s])
-            s_new, r, done = step(mdp, s, a)
+            s_new, r, done = step(mdp, a)
             V[s] += α[i]*(r + mdp.γ*V[s_new] - V[s])
             s = s_new
             if done break end
@@ -56,11 +56,11 @@ function TDλ(π::Array{Float64,2}, mdp::TabularMDP, λ::Float64, N_episodes::Nu
     e_t = zeros(length(mdp.S))
     γ = mdp.γ
     for n in 1:N_episodes
-        s = sampleInitialState(mdp)
+        s, done = reset(mdp)
         e_t = zeros(length(mdp.S))
         for t in 1:T
             a = rand(π_d[s])
-            s_new, r, done = step(mdp, s, a)
+            s_new, r, done = step(mdp, a)
             #TD-error
             δ_t = r + γ * V[s_new] - V[s]
             #Eligibility trace

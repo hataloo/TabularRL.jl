@@ -4,12 +4,57 @@ using Test
 @testset verbose = true "TabularRL.jl" begin
     
 detect_unbound_args(TabularRL)
+@testset "Algorithms" begin
+    #TODO: Add tests
+end
+
+@testset "Policy" begin
+    @test begin
+        mdp = getHallwayMDP(10, 0.9)
+        π = getUniformPolicy(mdp)
+        isa(sampleEpisode(mdp, π, 100), Episode)
+    end
+
+    @test begin 
+        mdp = getHallwayMDP(10, 0.9)
+        ϵ_iter = 5
+        π = EpsilonGreedyPolicy(mdp, 1.0, 0.0, ϵ_iter)
+        Q = fill(0.0, length(mdp.S), length(mdp.A))
+        Q[1,1] = 1.0
+        for _ = 1:ϵ_iter sample(π, 1, Q) end
+        sample(π, 1, Q) == 1
+    end
+
+    @test begin 
+        mdp = getHallwayMDP(3, 0.9)
+        β_iter = 5
+        π = BoltzmannPolicy(mdp, 0.0, 1e2, β_iter)
+        Q = fill(0.0, length(mdp.S), length(mdp.A))
+        Q[1,1] = 1.0
+        for _ = 1:β_iter sample(π, 1, Q) end
+        #Probability of returning 1: exp(1e2) / (exp(1e2) + 1), i.e. essentially 1.
+        sample(π, 1, Q) == 1
+    end
+
+    @test begin 
+        mdp = getHallwayMDP(3, 0.9)
+        β_iter = 5
+        π = BoltzmannPolicy(mdp, 0.0, 1e2, β_iter)
+        Q = fill(0.0, length(mdp.S), length(mdp.A))
+        Q[1,1] = -1.0
+        for _ = 1:β_iter sample(π, 1, Q) end
+        #Probability of returning 1: exp(-1e2) / (exp(-1e2) + 1), i.e. essentially 0.
+        sample(π, 1, Q) != 1
+    end
+end
+
 @testset "Envs" begin
+#TODO: Test functions in GridWorldUtility.jl
 
 @testset "HallwayMDP" begin
 @test typeof(getHallwayMDP(10, 0.9)) <: TabularMDP
-@test isa(getHallwayMDP(2, 0.5, true), TabularMDP)
-@test_throws DomainError getHallwayMDP(1, 0.5, true)
+@test isa(getHallwayMDP(3, 0.5, true), TabularMDP)
+@test_throws DomainError getHallwayMDP(2, 0.5, true)
 end
 
 @testset "CliffWalkingMDP" begin

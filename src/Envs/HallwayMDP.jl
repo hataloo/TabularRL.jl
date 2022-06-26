@@ -1,11 +1,14 @@
 
 function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true)::TabularMDP
-    if N < 2 throw(DomainError("N must be greater than 1, given N = $N.")) end
+    if N < 3 throw(DomainError("N must be greater than 2, given N = $N.")) end
     S = [i for i in 1:N]
     A = [1,2] #left, right
     μ = zeros(N)
-    if startInMiddle
-        μ[N ÷ 2] = 1.0
+    if startInMiddle && isodd(N)
+        μ[N ÷ 2 + 1] = 1.0
+    elseif startInMiddle && iseven(N)
+        μ[N ÷ 2] = 1/2
+        μ[N ÷ 2 + 1] = 1/2
     else
         μ .= 1/length(S)
     end
