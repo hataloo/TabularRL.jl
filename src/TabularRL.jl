@@ -22,11 +22,38 @@ include("Envs/FrozenLake.jl")
 
 export 
     #MDP.jl
-    TabularMDP, 
+    # Abstract types
+    Space,
+    DiscreteSpace,
+    ContinuousSpace,
+    AbstractMDP,
+    AbstractTabularMDP,
+    AbstractDiscreteMDP,
+    # MDPController
+    MDPController,
+    getMDP,
+    getState,
+    hasTerminated,
+    reset,
+    reset!,
+    # TabularMDP
+    TabularMDP,
+    getStates,
+    getActions,
+    getTransitionProbabilities,
+    getTransitionDistributions,
+    getRewardDistributions,
+    getInitialStateDistribution,
+    getTerminalMask,
+    getDiscountFactor,
     sampleInitialState,
+    isTerminalState,
+    meanReward,
     sampleNextState,
     sampleState,
+    sampleReward,
     step,
+    # Episode
     Episode,
     sampleEpisode,
     #Policy.jl

@@ -1,4 +1,5 @@
 function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Number, α = nothing)
+    γ = getDiscountFactor(mdp)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
@@ -6,11 +7,11 @@ function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Numbe
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
     V = zeros(length(mdp.S))
     for n in 1:N_episodes
-        s, done = reset(mdp)
+        s = reset(mdp)
         for t in 1:T
             a = rand(π_d[s])
             s_new, r, done = step(mdp, a)
-            V[s] += α[i]*(r + mdp.γ*V[s_new] - V[s])
+            V[s] += α[i]*(r + γ*V[s_new] - V[s])
             s = s_new
             if done break end
         end
@@ -20,12 +21,13 @@ function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Numbe
 end
 
 function TDnStep(π::Array{Float64,2}, mdp::TabularMDP, n::Int64, N_episodes::Number, T::Number, α = nothing)
+    γ = getDiscountFactor(mdp)
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
     i = 1
     V = zeros(length(mdp.S))
-    γ_power = [mdp.γ^(t) for t in 0:T] # Need to +1 to account for γ^0
+    γ_power = [γ^(t) for t in 0:T] # Need to +1 to account for γ^0
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
         L = length(e)
@@ -54,9 +56,9 @@ function TDλ(π::Array{Float64,2}, mdp::TabularMDP, λ::Float64, N_episodes::Nu
     V = zeros(length(mdp.S))
     π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
     e_t = zeros(length(mdp.S))
-    γ = mdp.γ
+    γ = getDiscountFactor(mdp)
     for n in 1:N_episodes
-        s, done = reset(mdp)
+        s = reset(mdp)
         e_t = zeros(length(mdp.S))
         for t in 1:T
             a = rand(π_d[s])

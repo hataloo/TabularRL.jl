@@ -7,7 +7,8 @@ function MonteCarlo(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T
     end
     n = zeros(length(mdp.S))
     V = zeros(length(mdp.S))
-    γ_power = [mdp.γ^(t) for t in 0:T] # Need to +1 to account for γ^0
+    γ = getDiscountFactor(mdp)
+    γ_power = [γ^(t) for t in 0:T] # Need to +1 to account for γ^0
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
         for (t,s) in enumerate(e.states)
