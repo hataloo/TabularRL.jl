@@ -11,3 +11,9 @@ function convolve(d1::DiscreteNonParametric, d2::DiscreteNonParametric)
     end
     return DiscreteNonParametric(support_conv, p_conv,check_args=false) 
 end
+
+struct NotImplementedError <: Exception
+    msg::String
+end
+
+Base.showerror(io::IO, e::NotImplementedError) = print(io, e.msg)

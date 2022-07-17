@@ -1,4 +1,5 @@
 using TabularRL
+using Distributions
 using Test
 
 @testset verbose = true "TabularRL.jl" begin
@@ -6,6 +7,45 @@ using Test
 detect_unbound_args(TabularRL)
 @testset "Algorithms" begin
     #TODO: Add tests
+    local mdp = getHallwayMDP(5, 0.95)
+    local π = getUniformPolicy(mdp)
+    @testset "ValuePolicyIteration" begin
+        # Test if ValueIteration runs.  
+        @test isa(ValueIteration(mdp, 2), Any)
+        # Test if PolicyIteration runs.
+        @test isa(PolicyIteration(mdp, 2), Any)
+        # Test if ActionValueIteration runs.
+        @test isa(ActionValueIteration(mdp, 2), Any)
+    end
+    @testset "MonteCarlo" begin
+        # Test if MonteCarlo algorithm runs.
+        @test isa(MonteCarlo(π.π_vals, mdp, 2, 10), Any)
+    end
+    @testset "QLearning" begin
+        local π = EpsilonGreedyPolicy(mdp, 1.0, 0.0, 10)
+        # Test if QLearning runs.
+        @test isa(QLearning(π, mdp, 2, 10), Any)
+        # Test if DoubleQLearning runs.
+        @test isa(DoubleQLearning(π, mdp, 2, 10), Any)
+    end
+    @testset "SARSA" begin
+        # Test if SARSA runs using array of policy.
+        @test isa(SARSA(π.π_vals, mdp, 2, 10), Any)
+        local πGLIE = EpsilonGreedyPolicy(mdp, 1.0, 0.0, 10)
+        # Test if SARSA runs using GLIE policy.
+        @test isa(SARSA(πGLIE, mdp, 2, 10), Any)
+        # Test if ExpectedSARSA runs using GLIE policy.
+        @test isa(ExpectedSARSA(πGLIE, mdp, 2, 10), Any)
+    end
+    @testset "TDLearning" begin
+        @test isa(TD0(π.π_vals, mdp, 2, 10), Any)
+        for n = 1:3
+            @test isa(TDnStep(π.π_vals, mdp, n, 2, 10), Any)
+        end
+        for λ in [0.0, 0.5, 1.0]
+            @test isa(TDλ(π.π_vals, mdp, λ, 2, 10), Any)
+        end
+    end
 end
 
 @testset "Policy" begin
@@ -46,6 +86,62 @@ end
         #Probability of returning 1: exp(-1e2) / (exp(-1e2) + 1), i.e. essentially 0.
         sample(π, 1, Q) != 1
     end
+end
+
+# @testset "MDPController" begin
+#     @test begin
+#         mdp = getHallwayMDP(5, 0.95)
+#         isa(MDPController(mdp, Int64), MDPController)
+#     end
+    
+#     @test_throws ArgumentError begin
+#         MDPController(getHallwayMDP(5, 0.95), Float64)
+#     end
+#     @test isa(MDPController(getHallwayMDP(5, 0.95), Real), MDPController)
+    
+
+#     @test begin
+#         mdp = getHallwayMDP(5, 0.95)
+#         controller = MDPController(mdp, Int64)
+#         reset(controller) == 3
+#     end
+
+#     @test begin 
+#         mdp = getHallwayMDP(5, 0.95)
+#         controller = MDPController(mdp, Int64)
+#         reset!(controller)
+#         getState(controller) == 3
+#     end
+
+#     struct tempControllerStruct <: AbstractMDPController{TabularMDP, Int64} end
+#     tempController = tempControllerStruct()
+#     @test_throws NotImplementedError getState(tempController)
+#     @test_throws NotImplementedError getMDP(tempController)
+#     @test_throws NotImplementedError hasTerminated(tempController)
+# end
+
+@testset "MDPWrapper" begin
+    struct TempMDPWrapper <: AbstractMDPWrapper{
+        Int64, DiscreteSpace{Int64},
+        Int32, DiscreteSpace{Int32},
+        DiscreteNonParametric,
+        AbstractMDP
+    } end
+    local tempMDPWrapper = TempMDPWrapper()
+    @test_throws NotImplementedError hasTerminated(tempMDPWrapper)
+    @test_throws NotImplementedError reset(tempMDPWrapper)
+    @test_throws NotImplementedError reset!(tempMDPWrapper)
+    @test_throws MethodError step(tempMDPWrapper, 1)
+
+    local mdp = getHallwayMDP(5, 0.95, true, true)
+    local wrappedMDP = VerboseWrapper(mdp)
+    @test reset(wrappedMDP) == 3
+    @test begin 
+        reset(wrappedMDP)
+        true
+    end
+    @test hasTerminated(wrappedMDP) == false
+    @test step(wrappedMDP, 1) == (2, -1.0, false)
 end
 
 @testset "Envs" begin

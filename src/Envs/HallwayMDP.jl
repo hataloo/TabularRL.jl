@@ -1,5 +1,5 @@
 
-function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true)::TabularMDP
+function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true, deterministic::Bool = false)::TabularMDP
     if N < 3 throw(DomainError("N must be greater than 2, given N = $N.")) end
     S = [i for i in 1:N]
     A = [1,2] #left, right
@@ -21,8 +21,13 @@ function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true)::TabularMDP
     R[2, 1] = 5
     R[N-1, 2] = 10
     P .= 0.0
-    p_left = 0.9 # Probability of going left when choosing left
-    p_right = 0.7 # Probability of going right when choosing right
+    if deterministic
+        p_left = 1.0
+        p_right = 1.0
+    else
+        p_left = 0.9 # Probability of going left when choosing left
+        p_right = 0.7 # Probability of going right when choosing right
+    end
     for s¹ in S, s⁰ in S, a in A
         if (s¹ - s⁰ == -1) && a == 1 # P(go left, if choosing left)
             P[s¹, s⁰, a] = p_left

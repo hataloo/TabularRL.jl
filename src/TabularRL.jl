@@ -3,9 +3,12 @@ module TabularRL
 using StatsBase, Distributions, DataStructures, LinearAlgebra, OrderedCollections
 using LogExpFunctions: softmax
 import Distributions:convolve
-import Base.length, Base.step
+import Base.length, Base.step, Base.reset, Base.showerror
+import Distributions.sample
 
 include("MDP.jl")
+# include("MDPController.jl")
+include("MDPWrapper.jl")
 include("Policy.jl")
 include("Utils.jl")
 include("Algorithms/ValuePolicyIteration.jl")
@@ -21,7 +24,7 @@ include("Envs/FrozenLake.jl")
 
 
 export 
-    #MDP.jl
+    # MDP.jl
     # Abstract types
     Space,
     DiscreteSpace,
@@ -29,13 +32,18 @@ export
     AbstractMDP,
     AbstractTabularMDP,
     AbstractDiscreteMDP,
-    # MDPController
-    MDPController,
-    getMDP,
-    getState,
     hasTerminated,
     reset,
     reset!,
+    step,
+    # MDPController
+    # AbstractMDPController,
+    # MDPController,
+    # getMDP,
+    # getState,
+    # MDPWrapper 
+    AbstractMDPWrapper,
+    VerboseWrapper,
     # TabularMDP
     TabularMDP,
     getStates,
@@ -56,7 +64,7 @@ export
     # Episode
     Episode,
     sampleEpisode,
-    #Policy.jl
+    # Policy.jl
     AbstractPolicy,
     GLIEPolicy,
     Policy,
@@ -66,27 +74,27 @@ export
     sample,
     BoltzmannPolicy,
     getUniformPolicy,
-    #Algorithms:
-        #ValuePolicyIteration
+    # Algorithms:
+        # ValuePolicyIteration
         ValueIteration,
         PolicyIteration,
         ActionValueIteration,
-        #MonteCarlo
+        # MonteCarlo
         MonteCarlo,
-        #TDLearning
+        # TDLearning
         TD0,
         TDnStep,
         TDλ,
-        #SARSA
+        # SARSA
         SARSA,
         ExpectedSARSA,
-        #QLearning,
+        # QLearning,
         QLearning,
         DoubleQLearning,
-    #Envs:
-        #HallwayMDP.jl
+    # Envs:
+        # HallwayMDP.jl
         getHallwayMDP,
-        #GridWorlds.jl
+        # GridWorlds.jl
         buildGridWorldTabularMDP,
         getMovementFunctions,
         getWrappingMovementFunctions,
@@ -97,11 +105,13 @@ export
         addResettingState!,
         findCharacterCoordinateInLayout,
         findAllCharacterCoordinatesInLayout,
-        #CliffWalking.jl
+        # CliffWalking.jl
         getCliffWalkingMDP,
-        #JacksCarRental.jl
+        # JacksCarRental.jl
         getJacksCarRentalMDP,
-        #FrozenLake.jl
+        # FrozenLake.jl
         getFrozenLakeMDP,
-        buildFrozenLakeFromLayout
+        buildFrozenLakeFromLayout,
+    # Utils:
+    NotImplementedError
 end
