@@ -7,7 +7,6 @@ import Base.length, Base.step, Base.reset, Base.showerror
 import Distributions.sample
 
 include("MDP.jl")
-# include("MDPController.jl")
 include("MDPWrapper.jl")
 include("Policy.jl")
 include("Utils.jl")
@@ -36,11 +35,6 @@ export
     reset,
     reset!,
     step,
-    # MDPController
-    # AbstractMDPController,
-    # MDPController,
-    # getMDP,
-    # getState,
     # MDPWrapper 
     AbstractMDPWrapper,
     VerboseWrapper,
