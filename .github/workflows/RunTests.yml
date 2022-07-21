@@ -18,5 +18,15 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
       - run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+      #- uses: julia-actions/julia-buildpkg@v1
+      -name: Build package
+       id: buildpackage
+       run: >
+        DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' julia --color=yes --project=/TabularRL.jl -e "using Pkg; Pkg.build(verbose = true)"
+      #- uses: julia-actions/julia-runtest@v1
+      - name: Run tests
+        id: runtests
+        run: >
+        DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' julia --color=yes --project=/TabularRL.jl -e "using Pkg; Pkg.test()" 
+        && echo "TESTS_SUCCESSFUL" = true >> $GITHUB_ENV
+      
