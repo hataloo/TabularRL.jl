@@ -1,7 +1,7 @@
 module TabularRL
 
 using StatsBase, Distributions, DataStructures, LinearAlgebra, OrderedCollections
-using GLMakie, Graphs, SimpleWeightedGraphs, GraphMakie
+using Makie, Graphs, SimpleWeightedGraphs, GraphMakie
 using LogExpFunctions: softmax
 import Distributions:convolve
 import Base.length, Base.step, Base.reset, Base.showerror
