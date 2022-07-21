@@ -6,7 +6,7 @@ using Test
     
 detect_unbound_args(TabularRL)
 @testset "Algorithms" begin
-    #TODO: Add tests
+    #TODO: Add correctness tests
     local mdp = getHallwayMDP(5, 0.95)
     local π = getUniformPolicy(mdp)
     @testset "ValuePolicyIteration" begin
@@ -49,12 +49,13 @@ detect_unbound_args(TabularRL)
 end
 
 @testset "Policy" begin
+    # Test sampling an episode using a uniform policy.
     @test begin
         mdp = getHallwayMDP(10, 0.9)
         π = getUniformPolicy(mdp)
         isa(sampleEpisode(mdp, π, 100), Episode)
     end
-
+    # Test that EpsilonGreedyPolicy converges to a = argmax Q
     @test begin 
         mdp = getHallwayMDP(10, 0.9)
         ϵ_iter = 5
@@ -64,7 +65,7 @@ end
         for _ = 1:ϵ_iter sample(π, 1, Q) end
         sample(π, 1, Q) == 1
     end
-
+    # Test that BoltzmannPolicy converges to a = argmax Q for Q[1,1] = 1.0
     @test begin 
         mdp = getHallwayMDP(3, 0.9)
         β_iter = 5
@@ -75,7 +76,7 @@ end
         #Probability of returning 1: exp(1e2) / (exp(1e2) + 1), i.e. essentially 1.
         sample(π, 1, Q) == 1
     end
-
+    # Test that BoltzmannPolicy does not converge to a = 1 when Q[1,1] = -1.0 and Q[1,a] = 0.0 for a != 1.
     @test begin 
         mdp = getHallwayMDP(3, 0.9)
         β_iter = 5
@@ -87,38 +88,6 @@ end
         sample(π, 1, Q) != 1
     end
 end
-
-# @testset "MDPController" begin
-#     @test begin
-#         mdp = getHallwayMDP(5, 0.95)
-#         isa(MDPController(mdp, Int64), MDPController)
-#     end
-    
-#     @test_throws ArgumentError begin
-#         MDPController(getHallwayMDP(5, 0.95), Float64)
-#     end
-#     @test isa(MDPController(getHallwayMDP(5, 0.95), Real), MDPController)
-    
-
-#     @test begin
-#         mdp = getHallwayMDP(5, 0.95)
-#         controller = MDPController(mdp, Int64)
-#         reset(controller) == 3
-#     end
-
-#     @test begin 
-#         mdp = getHallwayMDP(5, 0.95)
-#         controller = MDPController(mdp, Int64)
-#         reset!(controller)
-#         getState(controller) == 3
-#     end
-
-#     struct tempControllerStruct <: AbstractMDPController{TabularMDP, Int64} end
-#     tempController = tempControllerStruct()
-#     @test_throws NotImplementedError getState(tempController)
-#     @test_throws NotImplementedError getMDP(tempController)
-#     @test_throws NotImplementedError hasTerminated(tempController)
-# end
 
 @testset "MDPWrapper" begin
     struct TempMDPWrapper <: AbstractMDPWrapper{
@@ -151,6 +120,16 @@ end
 @test typeof(getHallwayMDP(10, 0.9)) <: TabularMDP
 @test isa(getHallwayMDP(3, 0.5, true), TabularMDP)
 @test_throws DomainError getHallwayMDP(2, 0.5, true)
+    @testset "HallwayVisualization" begin
+        @test isa(HallwayVisualizationWrapper(getHallwayMDP(3, 0.9, true, true)), 
+            AbstractTabularMDP)
+        local hvw = HallwayVisualizationWrapper(getHallwayMDP(3, 0.9, true, true))
+        @test reset!(hvw) === nothing
+        @test reset(hvw) == 2
+        @test step(hvw, 1) == (1, 5.0, true)
+        reset!(hvw)
+        @test step(hvw, 2) == (3, 10.0, true)
+    end
 end
 
 @testset "CliffWalkingMDP" begin

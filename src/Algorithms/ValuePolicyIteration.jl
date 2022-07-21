@@ -13,9 +13,9 @@ function ValueIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float6
 end
 
 function ValueIteration(mdp::TabularMDP, iterations::Int64)
-    R = getRewardDistributions(mdp)
+    R = getMeanRewards(mdp)
     γ = getDiscountFactor(mdp)
-    return ValueIteration(iterations, getTransitionProbabilities(mdp), mean.(R), γ)
+    return ValueIteration(iterations, getTransitionProbabilities(mdp), R, γ)
 end
 
 function PolicyIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float64,2}, γ::Float64)
@@ -52,7 +52,7 @@ end
 
 function PolicyIteration(mdp::TabularMDP, iterations::Int64)
     γ = getDiscountFactor(mdp)
-    return PolicyIteration(iterations, getTransitionProbabilities(mdp), meanReward(mdp), γ)
+    return PolicyIteration(iterations, getTransitionProbabilities(mdp), getMeanRewards(mdp), γ)
 end
 
 function ActionValueIteration(iterations::Int64, P::Array{Float64, 3}, R::Array{Float64,2}, γ::Float64)
@@ -71,5 +71,5 @@ end
 
 function ActionValueIteration(mdp::TabularMDP, iterations::Int64)
     γ = getDiscountFactor(mdp)
-    return ActionValueIteration(iterations, getTransitionProbabilities(mdp), meanReward(mdp), γ)
+    return ActionValueIteration(iterations, getTransitionProbabilities(mdp), getMeanRewards(mdp), γ)
 end

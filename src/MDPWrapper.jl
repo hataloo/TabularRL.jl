@@ -41,18 +41,20 @@ end
 
 function reset(mdpWrapper::VerboseWrapper)
     s_new = reset(mdpWrapper.MDP)
-    print("Initial state: s_new")
+    println("Initial state: s_new")
     return s_new
 end
 
 function reset!(mdpWrapper::VerboseWrapper)
     s_new = reset(mdpWrapper.MDP)
-    print("Initial state: $s_new")
+    println("Initial state: $s_new")
 end
 
 function step(mdpWrapper::VerboseWrapper{
     S_type, S_space,
     A_type, A_space, R_dist}, a::A_type) where 
     {S_type, S_space <: Space, A_type, A_space <: Space, R_dist <: Distribution} 
-    return step(mdpWrapper.MDP, a)
+    s_new, r, done =  step(mdpWrapper.MDP, a)
+    println("Action: $a, State: $s_new, Reward: $r, Done: $done")
+    return s_new, r, done
 end

@@ -142,7 +142,7 @@ end
 """
 E[r | s, a] for all s ∈ S, a ∈ A.
 """
-function meanReward(mdp::TabularMDP)
+function getMeanRewards(mdp::TabularMDP)
     if ndims(getRewardDistributions(mdp)) == 2
         return mean.(getRewardDistributions(mdp))
     else
@@ -184,6 +184,8 @@ function step(mdp::TabularMDP{S_type, A_type, R_dist}, a::A_type) where {S_type,
         r = sampleReward(mdp, s_new, s, a)    
     end
     terminated = isTerminalState(mdp, s_new)
+    setState(mdp, s_new)
+    setTerminated(mdp, terminated)
     return s_new, r, terminated
 end
 
