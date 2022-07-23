@@ -741,6 +741,12 @@ git-tree-sha1 = "e925a64b8585aa9f4e3047b8d2cdc3f0e79fd4e4"
 uuid = "f57f5aa1-a3ce-4bc8-8ab9-96f992907883"
 version = "0.3.16"
 
+[[deps.PackageCompiler]]
+deps = ["LazyArtifacts", "Libdl", "Pkg", "UUIDs"]
+git-tree-sha1 = "d2f93cc940b4a3d1aba77b266cbd7c7d404568c7"
+uuid = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
+version = "1.6.0"
+
 [[deps.Packing]]
 deps = ["GeometryBasics"]
 git-tree-sha1 = "1155f6f937fa2b94104162f01fa400e192e4272f"

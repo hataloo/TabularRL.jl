@@ -1,6 +1,7 @@
+using GLMakie
 using TabularRL
 using Distributions
 
-mdp = getHallwayMDP(3, .95, true, true)
+mdp = getHallwayMDP(7, .95, true, false)
 hvc = HallwayVisualController(mdp)
 hvc.fig
