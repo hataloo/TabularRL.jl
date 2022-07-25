@@ -91,8 +91,8 @@ end
 
 @testset "MDPWrapper" begin
     struct TempMDPWrapper <: AbstractMDPWrapper{
-        Int64, DiscreteSpace{Int64},
-        Int32, DiscreteSpace{Int32},
+        DiscreteSpace{Int64},
+        DiscreteSpace{Int32},
         DiscreteNonParametric,
         AbstractMDP
     } end
@@ -100,7 +100,7 @@ end
     @test_throws NotImplementedError hasTerminated(tempMDPWrapper)
     @test_throws NotImplementedError reset(tempMDPWrapper)
     @test_throws NotImplementedError reset!(tempMDPWrapper)
-    @test_throws MethodError step(tempMDPWrapper, 1)
+    @test_throws NotImplementedError step(tempMDPWrapper, 1)
 
     local mdp = getHallwayMDP(5, 0.95, true, true)
     local wrappedMDP = VerboseWrapper(mdp)

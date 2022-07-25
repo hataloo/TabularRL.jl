@@ -4,8 +4,9 @@ function TD0(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Numbe
         α = LinRange(1,1e-6, N_episodes) 
     end
     i = 1
-    π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
-    V = zeros(length(mdp.S))
+    actions = [a for a in getActions(mdp)]
+    π_d = [DiscreteNonParametric(actions, π[s,:]) for s in getStates(mdp)]
+    V = zeros(length(getStates(mdp)))
     for n in 1:N_episodes
         s = reset(mdp)
         for t in 1:T
@@ -26,7 +27,7 @@ function TDnStep(π::Array{Float64,2}, mdp::TabularMDP, n::Int64, N_episodes::Nu
         α = LinRange(1,1e-6, N_episodes) 
     end
     i = 1
-    V = zeros(length(mdp.S))
+    V = zeros(length(getStates(mdp)))
     γ_power = [γ^(t) for t in 0:T] # Need to +1 to account for γ^0
     for k in 1:N_episodes
         e = sampleEpisode(mdp, π, T)
@@ -53,20 +54,22 @@ function TDλ(π::Array{Float64,2}, mdp::TabularMDP, λ::Float64, N_episodes::Nu
         α = LinRange(1,1e-6, N_episodes) 
     end
     i = 1
-    V = zeros(length(mdp.S))
-    π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
-    e_t = zeros(length(mdp.S))
+    V = zeros(length(getStates(mdp)))
+    actions = [a for a in getActions(mdp)]
+    π_d = [DiscreteNonParametric(actions, π[s,:]) for s in getStates(mdp)]
+    e_t = zeros(length(getStates(mdp)))
     γ = getDiscountFactor(mdp)
+    S = Vector{Int64}(1:length(getStates(mdp)))
     for n in 1:N_episodes
         s = reset(mdp)
-        e_t = zeros(length(mdp.S))
+        e_t = zeros(length(getStates(mdp)))
         for t in 1:T
             a = rand(π_d[s])
             s_new, r, done = step(mdp, a)
             #TD-error
             δ_t = r + γ * V[s_new] - V[s]
             #Eligibility trace
-            e_t = (γ * λ) .* e_t .+ (mdp.S .== s) 
+            e_t = (γ * λ) .* e_t .+ (S .== s) 
             #Value update
             V .= V .+ (α[n] * δ_t) .* e_t
             s = s_new

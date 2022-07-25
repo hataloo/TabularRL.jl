@@ -23,5 +23,8 @@ jobs:
         run: DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' julia --color=yes --project=. -e "using Pkg; Pkg.build(verbose = true)"
       - name: Run tests
         id: runtests
-        run: DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' julia --color=yes --project=.  -e "using Pkg; Pkg.test()" && echo "TESTS_SUCCESSFUL" = true >> $GITHUB_ENV
-      
+        run: DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24' julia --color=yes --project=.  -e "using Pkg; Pkg.test(coverage = true)" && echo "TESTS_SUCCESSFUL" = true >> $GITHUB_ENV
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-actions@v1
+        with:
+          file: lcov.info

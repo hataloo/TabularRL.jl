@@ -3,8 +3,9 @@ function SARSA(π::Array{Float64,2}, mdp::TabularMDP, N_episodes::Number, T::Num
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
-    π_d = [DiscreteNonParametric(mdp.A, π[s,:]) for s in mdp.S]
-    Q = zeros(length(mdp.S), length(mdp.A))
+    numActions = length(getActions(mdp))
+    π_d = [DiscreteNonParametric(1:numActions, π[s,:]) for s in getStates(mdp)]
+    Q = zeros(length(getStates(mdp)), length(getActions(mdp)))
     i = 1
     for n in 1:N_episodes
         s = reset(mdp)
@@ -27,7 +28,7 @@ function SARSA(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::Number, �
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
-    Q = zeros(length(mdp.S), length(mdp.A))
+    Q = zeros(length(getStates(mdp)), length(getActions(mdp)))
     i = 1
     for n in 1:N_episodes
         s = reset(mdp)
@@ -51,7 +52,7 @@ function ExpectedSARSA(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::N
     if α === nothing 
         α = LinRange(1,1e-6, N_episodes) 
     end
-    Q = zeros(length(mdp.S), length(mdp.A))
+    Q = zeros(length(getStates(mdp)), length(getActions(mdp)))
     i = 1
     for n in 1:N_episodes
         s = reset(mdp)

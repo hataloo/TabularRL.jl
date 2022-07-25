@@ -4,9 +4,10 @@ using StatsBase, Distributions, DataStructures, LinearAlgebra, OrderedCollection
 using Makie, Graphs, SimpleWeightedGraphs, GraphMakie
 using LogExpFunctions: softmax
 import Distributions:convolve
-import Base.length, Base.step, Base.reset, Base.showerror
+import Base.length, Base.step, Base.reset, Base.showerror, Base.maximum, Base.iterate
 import Distributions.sample
 
+include("Space.jl")
 include("MDP.jl")
 include("MDPWrapper.jl")
 include("Policy.jl")
@@ -24,11 +25,16 @@ include("Envs/FrozenLake.jl")
 
 
 export 
-    # MDP.jl
-    # Abstract types
+    # Space.jl
     Space,
+    getSpaceType,
     DiscreteSpace,
     ContinuousSpace,
+    DiscreteContiguousSpace,
+    ContinuousContiguousSpace,
+    # MDP.jl
+    # Abstract types
+    TupleUnion,
     AbstractMDP,
     AbstractTabularMDP,
     AbstractDiscreteMDP,
@@ -64,7 +70,7 @@ export
     # Policy.jl
     AbstractPolicy,
     GLIEPolicy,
-    Policy,
+    TabularPolicy,
     getUniformPolicy,
     sample,
     EpsilonGreedyPolicy,

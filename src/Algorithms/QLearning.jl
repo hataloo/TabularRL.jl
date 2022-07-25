@@ -4,7 +4,7 @@ function QLearning(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T::Numbe
     if α === nothing
         α = LinRange(1, 1e-6, N_episodes)
     end
-    Q = zeros(length(mdp.S), length(mdp.A))
+    Q = zeros(length(getStates(mdp)), length(getActions(mdp)))
     i = 1
     for n in 1:N_episodes
         s = reset(mdp)
@@ -26,8 +26,8 @@ function DoubleQLearning(π::GLIEPolicy, mdp::TabularMDP, N_episodes::Number, T:
     if α === nothing
         α = LinRange(1, 1e-6, N_episodes)
     end
-    Q_1 = zeros(length(mdp.S), length(mdp.A))
-    Q_2 = zeros(length(mdp.S), length(mdp.A))
+    Q_1 = zeros(length(getStates(mdp)), length(getActions(mdp)))
+    Q_2 = zeros(length(getStates(mdp)), length(getActions(mdp)))
     i = 1
     for n in 1:N_episodes
         s = reset(mdp)

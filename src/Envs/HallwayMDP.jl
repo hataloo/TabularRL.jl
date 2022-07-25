@@ -50,20 +50,20 @@ function getHallwayMDP(N::Integer, γ, startInMiddle::Bool = true, deterministic
     P[:, N, :] .= 0.0
     P[1, 1, :] .= 1.0
     P[N, N, :] .= 1.0
-    return TabularMDP(S, A, P, R, μ, γ)
+    return TabularMDP(P, R, μ, γ)
     #return S, A, P, R
 end
 
 mutable struct HallwayVisualizationWrapper <: AbstractMDPWrapper{
-        Int64, DiscreteSpace{Int64},
-        Int64, DiscreteSpace{Int64},
+        DiscreteContiguousSpace,
+        DiscreteContiguousSpace,
         Dirac{Float64}, 
-        TabularMDP{Int64, Int64, Dirac{Float64}}}
-    MDP::TabularMDP{Int64, Int64, Dirac{Float64}}
+        TabularMDP{Dirac{Float64}}}
+    MDP::TabularMDP{Dirac{Float64}}
     fig::Figure
     graphPlots::Vector{Any}
     state::Int64
-    HallwayVisualizationWrapper(mdp::TabularMDP{Int64, Int64, Dirac{Float64}}) = begin
+    HallwayVisualizationWrapper(mdp::TabularMDP{Dirac{Float64}}) = begin
         numStates = length(getStates(mdp))
         fig = Figure(resolution = (minimum([160 * numStates, 1800]), 500))
         graphPlots = initHallwayVisualization(fig, mdp)
@@ -71,7 +71,7 @@ mutable struct HallwayVisualizationWrapper <: AbstractMDPWrapper{
         reset!(newHVW)
         newHVW
     end
-    HallwayVisualizationWrapper(gridPos::GridPosition, mdp::TabularMDP{Int64, Int64, Dirac{Float64}}) = begin
+    HallwayVisualizationWrapper(gridPos::GridPosition, mdp::TabularMDP{Dirac{Float64}}) = begin
         fig = gridPos.layout.parent
         graphPlots = initHallwayVisualization(gridPos, mdp)
         newHVW = new(mdp, fig, graphPlots, getCurrentState(mdp))
@@ -82,7 +82,7 @@ end
 
 
 
-function initHallwayVisualization(fig::Union{Figure, GridPosition}, mdp::TabularMDP{Int64, Int64, Dirac{Float64}})
+function initHallwayVisualization(fig::Union{Figure, GridPosition}, mdp::TabularMDP{Dirac{Float64}})
     numStates = length(getStates(mdp))
     numActions = length(getActions(mdp))
     meanRewards = mean.(getRewardDistributions(mdp))
