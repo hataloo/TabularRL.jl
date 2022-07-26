@@ -119,6 +119,8 @@ end
 @testset "HallwayMDP" begin
 @test typeof(getHallwayMDP(10, 0.9)) <: TabularMDP
 @test isa(getHallwayMDP(3, 0.5, true), TabularMDP)
+@test isa(getHallwayMDP(3, 0.5, true, false), TabularMDP)
+
 @test_throws DomainError getHallwayMDP(2, 0.5, true)
     @testset "HallwayVisualization" begin
         @test isa(HallwayVisualizationWrapper(getHallwayMDP(3, 0.9, true, true)), 
@@ -130,6 +132,9 @@ end
         reset!(hvw)
         @test step(hvw, 2) == (3, 10.0, true)
     end
+    @testset "HallwayVisualController" begin
+        @test isa(HallwayVisualController(getHallwayMDP(3, 0.9, true, true)), HallwayVisualController)
+    end
 end
 
 @testset "CliffWalkingMDP" begin
@@ -139,6 +144,29 @@ end
 @test_throws DomainError getCliffWalkingMDP(2, 0, 0.9, 0.0, false)
 @test_throws DomainError getCliffWalkingMDP(2, 2, 0.9, 2.0, false)
 @test_throws DomainError getCliffWalkingMDP(2, 2, 0.9, -0.1, false)
+end
+
+@testset "GridWorldUtility" begin
+    # TODO: Add tests for other buildTransitionProb functions.
+    # TODO: Test movement-transitions more precisely.
+local P, S, A = buildSlipperyGridTransitionProbabilities(10, 10, true, 0.0)
+@test all(abs.(sum(P, dims = [1, 2]) .- 1.0) .<= eps() )
+
+addTerminalState!(P, 2, 2)
+@test all(abs.(P[2, 2, 2, 2, :] .- 1.0) .<= eps() )
+@test all(abs.(sum(P[1:end .!= 2, 1:end .!= 2, 2, 2, :])) .<= eps() )
+
+local R = ones(10, 10, 10, 10, 4)
+addTerminalState!(P, 4, 4, R, 2.0)
+@test all(abs.(P[4, 4, 4, 4, :] .- 1.0) .<= eps() )
+@test all(abs.(sum(P[1:end .!= 4, 1:end .!= 4, 4, 4, :])) .<= eps() )
+@test all(R[4, 4, 4, 4, :] .== 0.0)
+for i in [-1, 1]
+    @test any(R[4, 4, 4 + i, 4, :] .== 2.0)
+end
+for i in [-1, 1]
+    @test any(R[4, 4, 4, 4 + i, :] .== 2.0)
+end
 end
 
 @testset "FrozenLakeMDP" begin   
